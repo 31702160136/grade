@@ -28,6 +28,12 @@ class StudentDao {
 		return $result;
 	}
 	
+	function findStudentById($id) {
+		$sql = "select * from `student` where `id`='" . $id."'";
+		$result = $this -> sql -> query($sql);
+		return $result;
+	}
+	
 	function sreachStudent($data) {
 		$sql = "select * from `student` where `".$data["key"]."` like '%" . $data["value"]."%'";
 		$result = $this -> sql -> query($sql);

@@ -22,7 +22,6 @@ class TaskDao {
 		}else{
 			$sql = "select * from `task` where `teacher_id`='" . $teacherId."'";
 		}
-		echo $sql;
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}

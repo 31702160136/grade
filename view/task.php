@@ -22,10 +22,8 @@
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a href="">首页</a>
-        <a href="">演示</a>
         <a>
-          <cite>导航元素</cite></a>
+          <cite>任务列表</cite></a>
       </span>
       <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -98,22 +96,7 @@
         				dataSum++;
         				var doEditItem=JSON.stringify(item);
         				var title=$("#title").prop("outerHTML");
-			        	var list='<tbody>'+
-			        	'<tr>'+
-				            	'<td>'+
-				              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-				            	'</td>'+
-				            	'<td>'+item.curriculum+'</td>'+
-				            	'<td>'+item.class+'</td>'+
-				            	'<td>'+item.semester+'</td>'+
-				            	'<td>'+item.creation_time+'</td>'+
-				            	'<td class="td-manage">'+
-				            	'<a href="task_info.php">'+
-				              		'<button class="layui-btn"><i class="layui-icon"></i>查看任务</button>'+
-				            	'</a>'+
-				            	'</td>'+
-			          		'</tr>'+
-			          		'</tbody>';
+			        	var list=getList(item);
 			          	if(!is_title){
 			          		$("#table").html(title);
 			          		is_title=true;
@@ -170,7 +153,7 @@ function init(){
 	}
 	//页数初始化
 	$.ajax({
- 			url:host+"select_student_sum.php",
+ 			url:host+"select_task_sum.php",
  			success:function(res){
    				var data=JSON.parse(res);
    				pageSum=parseInt(data.data);
@@ -215,30 +198,19 @@ function init(){
   	},
   	success:function(res){
         	var data=JSON.parse(res);
-        	var dataSum=0;
-        	$(data.data).each(function(index,item){
-        		dataSum++;
-//      		$("#sumInfo").text(parseInt());
-        		var doEditItem=JSON.stringify(item);
-	        	var list='<tbody>'+
-			        	'<tr>'+
-				            	'<td>'+
-				              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-				            	'</td>'+
-				            	'<td>'+item.curriculum+'</td>'+
-				            	'<td>'+item.class+'</td>'+
-				            	'<td>'+item.semester+'</td>'+
-				            	'<td>'+item.creation_time+'</td>'+
-				            	'<td class="td-manage">'+
-				              '<a href="task_info.php">'+
-				              		'<button class="layui-btn"><i class="layui-icon"></i>查看任务</button>'+
-				            	'</a>'+
-				            	'</td>'+
-			          		'</tr>'+
-			          		'</tbody>';
-	          	$("#table").append(list);
-    		});
-    		$("#sumInfo").text("共有数据："+dataSum+ "条");
+        	if(data.status){
+        		var dataSum=0;
+		        	$(data.data).each(function(index,item){
+		        		dataSum++;
+		//      		$("#sumInfo").text(parseInt());
+		        		var list=getList(item);
+			          	$("#table").append(list);
+		    			});
+		    		$("#sumInfo").text("共有数据："+dataSum+ "条");
+        	}else{
+            window.location.href="login_teacher.php";
+        	}
+        	
     	}
   });
 }
@@ -266,6 +238,26 @@ function getQueryVariable(variable)
                if(pair[0] == variable){return pair[1];}
        }
        return(false);
+}
+function getList(item){
+	var doEditItem=JSON.stringify(item);
+    	var list='<tbody>'+
+        	'<tr>'+
+	            	'<td>'+
+	              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
+	            	'</td>'+
+	            	'<td>'+item.curriculum+'</td>'+
+	            	'<td>'+item.class+'</td>'+
+	            	'<td>'+item.semester+'</td>'+
+	            	'<td>'+item.creation_time+'</td>'+
+	            	'<td class="td-manage">'+
+	              '<a href="task_info_group.php?task_id='+item.id+'">'+
+	              		'<button class="layui-btn"><i class="layui-icon"></i>查看任务</button>'+
+	            	'</a>'+
+	            	'</td>'+
+          		'</tr>'+
+      		'</tbody>';
+  	return list;
 }
 //编辑窗口
 function edit(item){

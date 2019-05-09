@@ -18,46 +18,36 @@
       <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a href="">首页</a>
-        <a href="">演示</a>
+        <a href="javascript:history.go(-2)">任务列表</a>
+        <a href="javascript:history.go(-1)">小组列表</a>
         <a>
-          <cite>导航元素</cite></a>
+          <cite id="g_title">成员列表</cite></a>
       </span>
       <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
-      <div class="layui-row">
-        <form class="layui-form layui-col-md12 x-so" action="student.php" method="get">
-          <div class="layui-input-inline">
-              <select name="area" lay-filter="area">
-                <option value="name">教师</option>
-                <option value="username">账号</option>
-              </select>
-          </div>
-          <input type="text" name="value"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
-          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-        </form>
-      </div>
       <xblock>
-        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
-        <button class="layui-btn" onclick="x_admin_show('添加教师','./teacher_add.php',600,450)"><i class="layui-icon"></i>添加</button>
+        <button id="del" class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
+        <button id="add" class="layui-btn" onclick="add()"><i class="layui-icon"></i>添加成员</button>
+        <button id="breakGroup" class="layui-btn" onclick="break_group()"><i class="layui-icon"></i>退出小组</button>
         <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
       </xblock>
       <table class="layui-table x-admin"  id="table">
         <thead id="title">
           <tr>
-            <th>
+            <th id="checkbox_title">
               <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
             </th>
-            <th>账号</th>
+            <th>学号</th>
             <th>姓名</th>
-            <th>密码</th>
-            <th>操作</th></tr>
+            <th>评分</th>
+            <th>互评总分值</th>
+            <th>组内互评</th>
+          </tr>
         </thead>
       </table>
       <div class="page">
@@ -82,9 +72,10 @@
         form.on('submit(sreach)', function(data){
         	$.ajax({
         		type:"get",
-        		url:host+"select_sreach_teacher.php",
+        		url:host+"select_sreach_member.php",
         		async:true,
         		data:{
+        			group_id:getQueryVariable("group_id"),
         			key:data.field.area,
         			value:data.field.value
         		},
@@ -95,7 +86,7 @@
         			$(data.data).each(function(index,item){
         				dataSum++;
         				var title=$("#title").prop("outerHTML");
-        				var list=getList(item);
+			        	var list=getList(item);
 			          	if(!is_title){
 			          		$("#table").html(title);
 			          		is_title=true;
@@ -123,23 +114,27 @@
    	function jia(){
    		if(parseInt($("#page2").prop("innerHTML"))<pageSum){
    			var page=parseInt($("#page2").prop("innerHTML"))+1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&group_id="+getQueryVariable("group_id");
    		}
    	}
    	//页数减
    	function jian(){
    		if(parseInt($("#page2").prop("innerHTML"))>1){
    			var page=parseInt($("#page2").prop("innerHTML"))-1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&group_id="+getQueryVariable("group_id");
    		}
    	}
    	//跳页
    	function pageOn(id){
    		var page=parseInt($("#"+id).prop("innerHTML"));
-   		window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   		window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&group_id="+getQueryVariable("group_id");
    	}
 //初始化
 function init(){
+	$("#checkbox_title").hide();
+	$("#del").hide();
+	$("#add").hide();
+	$("#g_title").text("成员列表--->"+decodeURI(getQueryVariable("name")));
 	var page=getQueryVariable("page");
 	//页数初始化
 	if(page){
@@ -152,7 +147,10 @@ function init(){
 	}
 	//页数初始化
 	$.ajax({
- 			url:host+"select_teacher_sum.php",
+ 			url:host+"select_member_sum.php",
+ 			data:{
+ 					"group_id":getQueryVariable("group_id")
+ 			},
  			success:function(res){
    				var data=JSON.parse(res);
    				pageSum=parseInt(data.data);
@@ -188,23 +186,51 @@ function init(){
    			//页数范围控制
  			}
  		});
- 	//查询学生列表
+ 	//查询列表
 	$.ajax({
-		url:host+"select_teachers.php",
+		url:host+"select_member.php",
   	data:{
+  		"group_id":getQueryVariable("group_id"),
   		page:$("#page2").prop("innerHTML"),
   		size:10
   	},
   	success:function(res){
-        	var data=JSON.parse(res);
+  		var data=JSON.parse(res);
+  		if(data.status){
+      is_captain(data);
+  		}else{
+	        window.location.href="login_student.php";
+	    	}
+    }
+  });
+}
+
+function is_captain(data){
+	$.ajax({
+		url:host+"select_is_captain.php",
+  	data:{
+  		"group_id":getQueryVariable("group_id")
+  	},
+  	success:function(res){
+        	var data2=JSON.parse(res);
         	var dataSum=0;
-        	$(data.data).each(function(index,item){
-        		dataSum++;
-//      		$("#sumInfo").text(parseInt());
-        		var list=getList(item);
-	          	$("#table").append(list);
-    		});
-    		$("#sumInfo").text("共有数据："+dataSum+ "条");
+	        	$(data.data).each(function(index,item){
+	        		dataSum++;
+	        		console.log(data2);
+							if(data2.status){
+								var list=getList(item);
+								$("#checkbox_title").show();
+								$("#del").show();
+								$("#add").show();
+							}else{
+								var list=getListHidden(item);
+								$("#checkbox_title").hide();
+								$("#del").hide();
+								$("#add").hide();
+							}
+		          $("#table").append(list);
+	    			});
+	    		$("#sumInfo").text("共有数据："+dataSum+ "条");
     	}
   });
 }
@@ -236,32 +262,67 @@ function getQueryVariable(variable)
 function getList(item){
 	var doEditItem=JSON.stringify(item);
 	var list='<tbody>'+
-    	'<tr>'+
+	    	'<tr>'+
             	'<td>'+
               		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
             	'</td>'+
             	'<td>'+item.username+'</td>'+
             	'<td>'+item.name+'</td>'+
-            	'<td>'+item.password+'</td>'+
+            	'<td>'+item.score+
+            	'<a title="编辑" onclick="editScore('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
+                	'<i class="layui-icon">&#xe642;</i>'+
+              	'</a>'+
+              	'</td>'+
+              	'<td>'+item.score_percent+'</td>'+
             	'<td class="td-manage">'+
-              		'<a title="编辑" onclick="edit('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
-                		'<i class="layui-icon">&#xe642;</i>'+
-              		'</a>'+
+              	'<button class="layui-btn" onclick="select('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看互评</button>'+
             	'</td>'+
       		'</tr>'+
   		'</tbody>';
   	return list;
 }
-//编辑窗口
-function edit(item){
-	var str="id="+encodeURI(item.id)+"&username="+encodeURI(item.username)+"&name="+encodeURI(item.name)+"&password="+encodeURI(item.password);
-	x_admin_show("编辑","teacher_edit_info.php?"+str,600,400);
+function getListHidden(item){
+	var doEditItem=JSON.stringify(item);
+	var list='<tbody>'+
+	    	'<tr>'+
+            	'<td hidden>'+
+              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
+            	'</td>'+
+            	'<td>'+item.username+'</td>'+
+            	'<td>'+item.name+'</td>'+
+            	'<td>'+item.score+
+            	'<a title="编辑" onclick="editScore('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
+                	'<i class="layui-icon">&#xe642;</i>'+
+              	'</a>'+
+              	'</td>'+
+              	'<td>'+item.score_percent+'</td>'+
+            	'<td class="td-manage">'+
+              	'<button class="layui-btn" onclick="select('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看互评</button>'+
+            	'</td>'+
+      		'</tr>'+
+  		'</tbody>';
+  	return list;
+}
+function add(){
+	var str="group_id="+encodeURI(getQueryVariable("group_id"))+"&task_id="+encodeURI(getQueryVariable("task_id"));
+	console.log(str);
+	x_admin_show("编辑","task_group_add_member.php?"+str,600,500);
+}
+
+function select(item){
+	var str="student_group_id="+item.id;
+	x_admin_show("编辑","student_score.php?"+str,600,500);
+}
+function editScore(item){
+	var str="student_group_id="+item.id;
+	x_admin_show("编辑","stu_task_student_edit_score.php?"+str,600,200);
 }
 
 //	$(document).on('click','#a1',function(){
 //             x_admin_show("编辑","member-edit.html",600,400);
 //  })
 /*用户-停用*/
+
 function member_stop(obj, id) {
 	layer.confirm('确认要停用吗？', function(index) {
 
@@ -287,7 +348,25 @@ function member_stop(obj, id) {
 
 	});
 }
-
+function break_group(){
+	$.ajax({
+		type:"post",
+		url:host+"delete_break_group.php",
+		data:{
+			group_id:getQueryVariable("group_id")
+		},
+		success:function(res){
+			var data=JSON.parse(res);
+			if (data.status) {
+				layer.alert(data.message, {icon: 6},function () {
+					location.replace(location.href);
+				});
+			}else{
+				layer.msg('退出失败', {icon: 2});
+			}
+		}
+	});
+}
 /*用户-删除*/
 function member_del(obj, id) {
 	layer.confirm('确认要删除吗？', function(index) {
@@ -307,7 +386,7 @@ function delAll(argument) {
 	layer.confirm('确认要删除吗？' + data, function(index) {
 		$.ajax({
 		type:"post",
-		url:host+"delete_teachers.php",
+		url:host+"delete_member.php",
   	data:{
   		ids:data
   	},
@@ -315,7 +394,7 @@ function delAll(argument) {
         	var data=JSON.parse(res);
         	layer.msg('删除成功', {icon: 1});
           // 可以对父窗口进行刷新 
-          x_admin_father_reload();
+          location.replace(location.href);
    }
   });
 //		//捉到所有被选中的，发异步进行删除

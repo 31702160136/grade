@@ -15,35 +15,50 @@ class GroupDao {
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}
-
-	function findColumnById($id) {
-		$sql = "select * from `column` where `id`=" . $id;
+	function sreachGroup($data) {
+		$sql = "select * from `group` where `task_id`='".$data["task_id"]."' and `".$data["key"]."` like '%" . $data["value"]."%'";
+		$result = $this -> sql -> query($sql);
+		return $result;
+	}
+	function findGroupByTaskId($taskId,$page=null,$size=null) {
+		if(isset($page)&&isset($size)){
+			$sql = "select * from `group` where `task_id`='" . $taskId."' limit ".$page.",".$size;
+		}else{
+			$sql = "select * from `group` where `task_id`='" . $taskId."'";
+		}
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}
 
-	function findColumnByTitle($title) {
-		$sql = "select * from `column` where title='" . $title . "'";
+	function findGroupByName($name) {
+		$sql = "select * from `group` where `name`='" . $name . "'";
+		$result = $this -> sql -> query($sql);
+		return $result;
+	}
+	
+	function findGroupById($id) {
+		$sql = "select * from `group` where `id`='" . $id . "'";
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}
 
-	function createColumn($data) {
-		$array = array("table" => "column", "data" => $data);
+	function createGroup($data) {
+		$array = array("table" => "group", "data" => $data);
 		$result = $this -> sql -> insert($array);
 		return $result;
 	}
 
-	//修改栏目
-	function modifyColumn($data, $id) {
-		$array = array("id" => $id, "table" => "column", "data" => $data);
+	//修改小组
+	function modifyGroup($data, $id) {
+		$array = array("id" => $id, "table" => "group", "data" => $data);
 		$result = $this -> sql -> modify($array);
 		return $result;
 	}
-	//删除栏目
-	function deleteColumnById($data){
+	
+	//删除小组
+	function deleteGroupById($data){
 		$array=array(
-			"table"=>"column",
+			"table"=>"group",
 			"fields"=>"id",
 			"data"=>$data
 		);

@@ -23,7 +23,12 @@ if (sessionIsLogin()) {
 			error("未知角色，不能查询任务");
 			break;
 	}
-	succeedOfInfo("查询任务列表成功", $result);
+	if(is_float((count($result)/10))){
+		$sum=intval((count($result)/10))+1;
+	}else{
+		$sum=1;
+	}
+	succeedOfInfo("查询任务页数成功", $sum);
 } else {
 	error("用户未登录");
 }

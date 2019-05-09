@@ -18,14 +18,12 @@
       <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a href="">首页</a>
-        <a href="">演示</a>
+        <a href="javascript:history.go(-1)">任务列表</a>
         <a>
-          <cite>导航元素</cite></a>
+          <cite>小组列表</cite></a>
       </span>
       <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -35,9 +33,7 @@
         <form class="layui-form layui-col-md12 x-so" action="student.php" method="get">
           <div class="layui-input-inline">
               <select name="area" lay-filter="area">
-                <option value="curriculum">课程</option>
-                <option value="class">班级</option>
-                <option value="semester">学期</option>
+                <option value="name">组名</option>
               </select>
           </div>
           <input type="text" name="value"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
@@ -46,7 +42,7 @@
       </div>
       <xblock>
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
-        <button class="layui-btn" onclick="x_admin_show('添加学生','./task_add.php',600,350)"><i class="layui-icon"></i>创建</button>
+        <button class="layui-btn" onclick="add()"><i class="layui-icon"></i>添加小组</button>
         <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
       </xblock>
       <table class="layui-table x-admin"  id="table">
@@ -55,11 +51,13 @@
             <th>
               <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
             </th>
-            <th>课程</th>
-            <th>班级</th>
-            <th>学期</th>
-            <th>任务发布日期</th>
-            <th>查看任务</th></tr>
+            <th>组名</th>
+            <th>队长</th>
+            <th>成绩</th>
+            <th>互评分值比例</th>
+            <th>小组互评</th>
+            <th>组成员</th>
+          </tr>
         </thead>
       </table>
       <div class="page">
@@ -84,9 +82,10 @@
         form.on('submit(sreach)', function(data){
         	$.ajax({
         		type:"get",
-        		url:host+"select_task_sreach.php",
+        		url:host+"select_sreach_group.php",
         		async:true,
         		data:{
+        			task_id:getQueryVariable("task_id"),
         			key:data.field.area,
         			value:data.field.value
         		},
@@ -96,22 +95,8 @@
         			var dataSum=0;
         			$(data.data).each(function(index,item){
         				dataSum++;
-        				var doEditItem=JSON.stringify(item);
         				var title=$("#title").prop("outerHTML");
-			        	var list='<tbody>'+
-			        	'<tr>'+
-				            	'<td>'+
-				              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-				            	'</td>'+
-				            	'<td>'+item.curriculum+'</td>'+
-				            	'<td>'+item.class+'</td>'+
-				            	'<td>'+item.semester+'</td>'+
-				            	'<td>'+item.creation_time+'</td>'+
-				            	'<td class="td-manage">'+
-				              		'<button class="layui-btn" onclick="x_admin_show("s","./task_add.php",600,450)"><i class="layui-icon"></i>添加</button>'+
-				            	'</td>'+
-			          		'</tr>'+
-			          		'</tbody>';
+			        	var list=getList(item);
 			          	if(!is_title){
 			          		$("#table").html(title);
 			          		is_title=true;
@@ -139,20 +124,20 @@
    	function jia(){
    		if(parseInt($("#page2").prop("innerHTML"))<pageSum){
    			var page=parseInt($("#page2").prop("innerHTML"))+1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&task_id="+getQueryVariable("task_id");
    		}
    	}
    	//页数减
    	function jian(){
    		if(parseInt($("#page2").prop("innerHTML"))>1){
    			var page=parseInt($("#page2").prop("innerHTML"))-1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&task_id="+getQueryVariable("task_id");
    		}
    	}
    	//跳页
    	function pageOn(id){
    		var page=parseInt($("#"+id).prop("innerHTML"));
-   		window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   		window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&task_id="+getQueryVariable("task_id");
    	}
 //初始化
 function init(){
@@ -168,7 +153,7 @@ function init(){
 	}
 	//页数初始化
 	$.ajax({
- 			url:host+"select_student_sum.php",
+ 			url:host+"select_group_sum.php",
  			success:function(res){
    				var data=JSON.parse(res);
    				pageSum=parseInt(data.data);
@@ -206,35 +191,27 @@ function init(){
  		});
  	//查询任务列表
 	$.ajax({
-		url:host+"select_tasks.php",
+		url:host+"select_groups.php",
   	data:{
+  		"task_id":getQueryVariable("task_id"),
   		page:$("#page2").prop("innerHTML"),
   		size:10
   	},
   	success:function(res){
         	var data=JSON.parse(res);
-        	var dataSum=0;
+        	
+    		if(data.status){
+        		var dataSum=0;
         	$(data.data).each(function(index,item){
-        		dataSum++;
-//      		$("#sumInfo").text(parseInt());
-        		var doEditItem=JSON.stringify(item);
-	        	var list='<tbody>'+
-			        	'<tr>'+
-				            	'<td>'+
-				              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-				            	'</td>'+
-				            	'<td>'+item.curriculum+'</td>'+
-				            	'<td>'+item.class+'</td>'+
-				            	'<td>'+item.semester+'</td>'+
-				            	'<td>'+item.creation_time+'</td>'+
-				            	'<td class="td-manage">'+
-				              		'<button class="layui-btn" onclick="x_admin_show("添加学生","./student_add.php",600,450)"><i class="layui-icon"></i>查看任务</button>'+
-				            	'</td>'+
-			          		'</tr>'+
-			          		'</tbody>';
-	          	$("#table").append(list);
-    		});
-    		$("#sumInfo").text("共有数据："+dataSum+ "条");
+		        		dataSum++;
+		//      		$("#sumInfo").text(parseInt());
+			        	var list=getList(item);
+			          	$("#table").append(list);
+		    		});
+		    		$("#sumInfo").text("共有数据："+dataSum+ "条");
+        	}else{
+            window.location.href="login_teacher.php";
+        	}
     	}
   });
 }
@@ -263,14 +240,51 @@ function getQueryVariable(variable)
        }
        return(false);
 }
-//编辑窗口
-function edit(item){
-	var str="id="+encodeURI(item.id)+"&username="+encodeURI(item.username)+"&name="+encodeURI(item.name)+"&department="+encodeURI(item.department)+"&class="+encodeURI(item.class)+"&password="+encodeURI(item.password);
-	x_admin_show("编辑","student_edit_info.php?"+str,600,400);
+function getList(item){
+	var doEditItem=JSON.stringify(item);
+	var list='<tbody>'+
+	    	'<tr>'+
+            	'<td>'+
+              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
+            	'</td>'+
+            	'<td>'+item.name+'</td>'+
+            	'<td>'+item.student+
+            	'<a title="编辑" onclick="editCaptain('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
+                	'<i class="layui-icon">&#xe642;</i>'+
+              	'</a>'+
+            	'</td>'+
+            	'<td>'+item.teacher_by_score+
+            	'<a title="编辑" onclick="editScore('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
+                	'<i class="layui-icon">&#xe642;</i>'+
+              	'</a>'+
+            	'</td>'+
+            	'<td>'+item.score_percent+'</td>'+
+            	'<td class="td-manage">'+
+              	'<button class="layui-btn" onclick="select('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看互评</button>'+
+            	'</td>'+
+            	'<td class="td-manage">'+
+              	'<a href="task_info_group_student.php?group_id='+item.id+"&name="+item.name+"&task_id="+encodeURI(getQueryVariable("task_id"))+'">'+
+              		'<button class="layui-btn"><i class="layui-icon"></i>查看成员</button>'+
+            	'</a>'+
+            	'</td>'+
+      		'</tr>'+
+  		'</tbody>';
+  	return list;
 }
-//修改密码窗口
-function editPass(){
-	x_admin_show("修改密码","member-edit.html",600,400);
+//编辑窗口
+function add(){
+	var str="task_id="+encodeURI(getQueryVariable("task_id"));
+	x_admin_show("编辑","task_group_add.php?"+str,600,200);
+}
+function editScore(item){
+	x_admin_show("设置成绩","task_group_edit_score.php?group_id="+item.id,600,200);
+}
+function editCaptain(item){
+	x_admin_show("设置队长","task_group_edit_captain.php?group_id="+item.id,600,400);
+}
+function select(item){
+	var str="group_id="+item.id;
+	x_admin_show("编辑","group_score.php?"+str,600,500);
 }
 //	$(document).on('click','#a1',function(){
 //             x_admin_show("编辑","member-edit.html",600,400);
@@ -321,15 +335,15 @@ function delAll(argument) {
 	layer.confirm('确认要删除吗？' + data, function(index) {
 		$.ajax({
 		type:"post",
-		url:host+"delete_task.php",
+		url:host+"delete_group.php",
   	data:{
   		ids:data
   	},
   	success:function(res){
         	var data=JSON.parse(res);
         	layer.msg('删除成功', {icon: 1});
-          // 可以对父窗口进行刷新 
-          x_admin_father_reload();
+          // 可以窗口进行刷新 
+          location.replace(location.href);
    }
   });
 //		//捉到所有被选中的，发异步进行删除

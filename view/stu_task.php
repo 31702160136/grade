@@ -22,10 +22,8 @@
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a href="">首页</a>
-        <a href="">演示</a>
         <a>
-          <cite>导航元素</cite></a>
+          <cite>任务列表</cite></a>
       </span>
       <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -35,29 +33,24 @@
         <form class="layui-form layui-col-md12 x-so" action="student.php" method="get">
           <div class="layui-input-inline">
               <select name="area" lay-filter="area">
-                <option value="name">教师</option>
-                <option value="username">账号</option>
+                <option value="curriculum">课程</option>
+                <option value="class">班级</option>
+                <option value="semester">学期</option>
               </select>
           </div>
           <input type="text" name="value"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
           <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
         </form>
       </div>
-      <xblock>
-        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
-        <button class="layui-btn" onclick="x_admin_show('添加教师','./teacher_add.php',600,450)"><i class="layui-icon"></i>添加</button>
-        <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
-      </xblock>
+      <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
       <table class="layui-table x-admin"  id="table">
         <thead id="title">
           <tr>
-            <th>
-              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-            </th>
-            <th>账号</th>
-            <th>姓名</th>
-            <th>密码</th>
-            <th>操作</th></tr>
+            <th>课程</th>
+            <th>班级</th>
+            <th>学期</th>
+            <th>任务发布日期</th>
+            <th>查看任务</th></tr>
         </thead>
       </table>
       <div class="page">
@@ -82,7 +75,7 @@
         form.on('submit(sreach)', function(data){
         	$.ajax({
         		type:"get",
-        		url:host+"select_sreach_teacher.php",
+        		url:host+"select_task_sreach.php",
         		async:true,
         		data:{
         			key:data.field.area,
@@ -94,8 +87,9 @@
         			var dataSum=0;
         			$(data.data).each(function(index,item){
         				dataSum++;
+        				var doEditItem=JSON.stringify(item);
         				var title=$("#title").prop("outerHTML");
-        				var list=getList(item);
+			        	var list=getList(item);
 			          	if(!is_title){
 			          		$("#table").html(title);
 			          		is_title=true;
@@ -107,7 +101,7 @@
         	});
             return false;
         });
-         
+        
         laydate.render({
           elem: '#start' //指定元素
         });
@@ -136,7 +130,7 @@
    	//跳页
    	function pageOn(id){
    		var page=parseInt($("#"+id).prop("innerHTML"));
-   		window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   		window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&task_id"+getQueryVariable("task_id");
    	}
 //初始化
 function init(){
@@ -152,7 +146,7 @@ function init(){
 	}
 	//页数初始化
 	$.ajax({
- 			url:host+"select_teacher_sum.php",
+ 			url:host+"select_task_sum.php",
  			success:function(res){
    				var data=JSON.parse(res);
    				pageSum=parseInt(data.data);
@@ -188,16 +182,17 @@ function init(){
    			//页数范围控制
  			}
  		});
- 	//查询学生列表
+ 	//查询任务列表
 	$.ajax({
-		url:host+"select_teachers.php",
+		url:host+"select_tasks.php",
   	data:{
   		page:$("#page2").prop("innerHTML"),
   		size:10
   	},
   	success:function(res){
         	var data=JSON.parse(res);
-        	var dataSum=0;
+    		if(data.status){
+    			var dataSum=0;
         	$(data.data).each(function(index,item){
         		dataSum++;
 //      		$("#sumInfo").text(parseInt());
@@ -205,6 +200,9 @@ function init(){
 	          	$("#table").append(list);
     		});
     		$("#sumInfo").text("共有数据："+dataSum+ "条");
+    		}else{
+	        window.location.href="login_student.php";
+	    	}
     	}
   });
 }
@@ -235,29 +233,30 @@ function getQueryVariable(variable)
 }
 function getList(item){
 	var doEditItem=JSON.stringify(item);
-	var list='<tbody>'+
-    	'<tr>'+
-            	'<td>'+
-              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-            	'</td>'+
-            	'<td>'+item.username+'</td>'+
-            	'<td>'+item.name+'</td>'+
-            	'<td>'+item.password+'</td>'+
-            	'<td class="td-manage">'+
-              		'<a title="编辑" onclick="edit('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
-                		'<i class="layui-icon">&#xe642;</i>'+
-              		'</a>'+
-            	'</td>'+
-      		'</tr>'+
-  		'</tbody>';
+    	var list='<tbody>'+
+        	'<tr>'+
+	            	'<td>'+item.curriculum+'</td>'+
+	            	'<td>'+item.class+'</td>'+
+	            	'<td>'+item.semester+'</td>'+
+	            	'<td>'+item.creation_time+'</td>'+
+	            	'<td class="td-manage">'+
+	              '<a href="stu_task_info_group.php?task_id='+item.id+'">'+
+	              		'<button class="layui-btn"><i class="layui-icon"></i>查看任务</button>'+
+	            	'</a>'+
+	            	'</td>'+
+          		'</tr>'+
+      		'</tbody>';
   	return list;
 }
 //编辑窗口
 function edit(item){
-	var str="id="+encodeURI(item.id)+"&username="+encodeURI(item.username)+"&name="+encodeURI(item.name)+"&password="+encodeURI(item.password);
-	x_admin_show("编辑","teacher_edit_info.php?"+str,600,400);
+	var str="id="+encodeURI(item.id)+"&username="+encodeURI(item.username)+"&name="+encodeURI(item.name)+"&department="+encodeURI(item.department)+"&class="+encodeURI(item.class)+"&password="+encodeURI(item.password);
+	x_admin_show("编辑","student_edit_info.php?"+str,600,400);
 }
-
+//修改密码窗口
+function editPass(){
+	x_admin_show("修改密码","member-edit.html",600,400);
+}
 //	$(document).on('click','#a1',function(){
 //             x_admin_show("编辑","member-edit.html",600,400);
 //  })
@@ -307,7 +306,7 @@ function delAll(argument) {
 	layer.confirm('确认要删除吗？' + data, function(index) {
 		$.ajax({
 		type:"post",
-		url:host+"delete_teachers.php",
+		url:host+"delete_task.php",
   	data:{
   		ids:data
   	},

@@ -18,14 +18,12 @@
       <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a href="">首页</a>
-        <a href="">演示</a>
+        <a href="javascript:history.go(-1)">任务列表</a>
         <a>
-          <cite>导航元素</cite></a>
+          <cite>小组列表</cite></a>
       </span>
       <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -35,8 +33,7 @@
         <form class="layui-form layui-col-md12 x-so" action="student.php" method="get">
           <div class="layui-input-inline">
               <select name="area" lay-filter="area">
-                <option value="name">教师</option>
-                <option value="username">账号</option>
+                <option value="name">组名</option>
               </select>
           </div>
           <input type="text" name="value"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
@@ -44,20 +41,20 @@
         </form>
       </div>
       <xblock>
-        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
-        <button class="layui-btn" onclick="x_admin_show('添加教师','./teacher_add.php',600,450)"><i class="layui-icon"></i>添加</button>
+        <button class="layui-btn" onclick="openMyGroup()"><i class="layui-icon"></i>我的小组</button>
+        <button class="layui-btn" onclick="add()"><i class="layui-icon"></i>创建小组</button>
         <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
       </xblock>
       <table class="layui-table x-admin"  id="table">
         <thead id="title">
           <tr>
-            <th>
-              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-            </th>
-            <th>账号</th>
-            <th>姓名</th>
-            <th>密码</th>
-            <th>操作</th></tr>
+            <th>组名</th>
+            <th>队长</th>
+            <th id="score">分数</th>
+            <th>互评分值比例</th>
+            <th>小组互评</th>
+            <th>组成员</th>
+          </tr>
         </thead>
       </table>
       <div class="page">
@@ -82,9 +79,10 @@
         form.on('submit(sreach)', function(data){
         	$.ajax({
         		type:"get",
-        		url:host+"select_sreach_teacher.php",
+        		url:host+"select_sreach_group.php",
         		async:true,
         		data:{
+        			task_id:getQueryVariable("task_id"),
         			key:data.field.area,
         			value:data.field.value
         		},
@@ -95,12 +93,13 @@
         			$(data.data).each(function(index,item){
         				dataSum++;
         				var title=$("#title").prop("outerHTML");
-        				var list=getList(item);
+			        	var list=getList_member(item);
 			          	if(!is_title){
 			          		$("#table").html(title);
 			          		is_title=true;
 			          	}
 			          	$("#table").append(list);
+			          	$("#score").hide();
 		    				});
 		    				$("#sumInfo").text("共有数据："+dataSum+ "条");
         		}
@@ -123,20 +122,20 @@
    	function jia(){
    		if(parseInt($("#page2").prop("innerHTML"))<pageSum){
    			var page=parseInt($("#page2").prop("innerHTML"))+1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&task_id="+getQueryVariable("task_id");
    		}
    	}
    	//页数减
    	function jian(){
    		if(parseInt($("#page2").prop("innerHTML"))>1){
    			var page=parseInt($("#page2").prop("innerHTML"))-1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&task_id="+getQueryVariable("task_id");
    		}
    	}
    	//跳页
    	function pageOn(id){
    		var page=parseInt($("#"+id).prop("innerHTML"));
-   		window.location.href=window.location.origin+window.location.pathname+"?page="+page;
+   		window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&task_id="+getQueryVariable("task_id");
    	}
 //初始化
 function init(){
@@ -152,7 +151,7 @@ function init(){
 	}
 	//页数初始化
 	$.ajax({
- 			url:host+"select_teacher_sum.php",
+ 			url:host+"select_group_sum.php",
  			success:function(res){
    				var data=JSON.parse(res);
    				pageSum=parseInt(data.data);
@@ -188,23 +187,77 @@ function init(){
    			//页数范围控制
  			}
  		});
- 	//查询学生列表
+ 	getGroups();
+}
+var myGroupId=0;
+function getGroups(){
+	//查询小组列表
 	$.ajax({
-		url:host+"select_teachers.php",
+		url:host+"select_my_group.php",
   	data:{
+  		"task_id":getQueryVariable("task_id")
+  	},
+  	success:function(res){
+        	var data=JSON.parse(res);
+        	if(data.status){
+        		myGroupId=data.data.group_id;
+        		getGroups_captain(data.data.group_id);
+        	}else{
+        		getGroups_member();
+        	}
+    	}
+  });
+}
+function getGroups_captain(group_id){
+	//查询小组列表
+	$.ajax({
+		url:host+"select_group_score_list.php",
+  	data:{
+  		"task_id":getQueryVariable("task_id"),
+  		"group_id":group_id,
   		page:$("#page2").prop("innerHTML"),
   		size:10
   	},
   	success:function(res){
         	var data=JSON.parse(res);
+    		if(data.status){
+	        	var dataSum=0;
+	        	$(data.data).each(function(index,item){
+	        		dataSum++;
+	//      		$("#sumInfo").text(parseInt());
+		        	var list=getList(item);
+		          	$("#table").append(list);
+	    		});
+	    		$("#sumInfo").text("共有数据："+dataSum+ "条");
+    		}else{
+	        window.location.href="login_student.php";
+	    	}
+    	}
+  });
+}
+function getGroups_member(){
+	//查询小组列表
+	$.ajax({
+		url:host+"select_groups.php",
+  	data:{
+  		"task_id":getQueryVariable("task_id"),
+  		page:$("#page2").prop("innerHTML"),
+  		size:10
+  	},
+  	success:function(res){
+        	var data=JSON.parse(res);
+    		if(data.status){
         	var dataSum=0;
         	$(data.data).each(function(index,item){
         		dataSum++;
 //      		$("#sumInfo").text(parseInt());
-        		var list=getList(item);
+	        	var list=getList_member(item);
 	          	$("#table").append(list);
     		});
     		$("#sumInfo").text("共有数据："+dataSum+ "条");
+    		}else{
+	        window.location.href="login_student.php";
+	    	}
     	}
   });
 }
@@ -236,28 +289,64 @@ function getQueryVariable(variable)
 function getList(item){
 	var doEditItem=JSON.stringify(item);
 	var list='<tbody>'+
-    	'<tr>'+
-            	'<td>'+
-              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-            	'</td>'+
-            	'<td>'+item.username+'</td>'+
+	    	'<tr>'+
             	'<td>'+item.name+'</td>'+
-            	'<td>'+item.password+'</td>'+
+            	'<td>'+item.student+'</td>'+
+            	'<td>'+item.score+
+            	'<a title="编辑" onclick="editScore('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
+                	'<i class="layui-icon">&#xe642;</i>'+
+              	'</a>'+
+            	'</td>'+
+            	'<td>'+item.score_percent+'</td>'+
+            	'</td>'+
             	'<td class="td-manage">'+
-              		'<a title="编辑" onclick="edit('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
-                		'<i class="layui-icon">&#xe642;</i>'+
-              		'</a>'+
+              	'<button class="layui-btn" onclick="select('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看互评</button>'+
+            	'</td>'+
+            	'<td class="td-manage">'+
+              	'<a href="stu_task_info_group_student.php?group_id='+item.id+"&name="+item.name+"&task_id="+encodeURI(getQueryVariable("task_id"))+'">'+
+              		'<button class="layui-btn"><i class="layui-icon"></i>查看成员</button>'+
+            	'</a>'+
             	'</td>'+
       		'</tr>'+
   		'</tbody>';
   	return list;
 }
-//编辑窗口
-function edit(item){
-	var str="id="+encodeURI(item.id)+"&username="+encodeURI(item.username)+"&name="+encodeURI(item.name)+"&password="+encodeURI(item.password);
-	x_admin_show("编辑","teacher_edit_info.php?"+str,600,400);
+function getList_member(item){
+	var doEditItem=JSON.stringify(item);
+	var list='<tbody>'+
+	    	'<tr>'+
+            	'<td>'+item.name+'</td>'+
+            	'<td>'+item.student+'</td>'+
+            	'<td>'+item.score_percent+'</td>'+
+            	'</td>'+
+            	'<td class="td-manage">'+
+              	'<button class="layui-btn" onclick="select('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看互评</button>'+
+            	'</td>'+
+            	'<td class="td-manage">'+
+              	'<a href="stu_task_info_group_student.php?group_id='+item.id+"&name="+item.name+"&task_id="+encodeURI(getQueryVariable("task_id"))+'">'+
+              		'<button class="layui-btn"><i class="layui-icon"></i>查看成员</button>'+
+            	'</a>'+
+            	'</td>'+
+      		'</tr>'+
+  		'</tbody>';
+  $("#score").hide();
+  	return list;
 }
-
+//编辑窗口
+function add(){
+	var str="task_id="+encodeURI(getQueryVariable("task_id"));
+	x_admin_show("编辑","task_group_add.php?"+str,600,200);
+}
+function editScore(item){
+	x_admin_show("设置成绩","stu_task_group_edit_score.php?group_id="+item.id+"&from_group_id="+myGroupId,600,200);
+}
+function editCaptain(item){
+	x_admin_show("设置队长","task_group_edit_captain.php?group_id="+item.id,600,400);
+}
+function select(item){
+	var str="group_id="+item.id;
+	x_admin_show("编辑","group_score.php?"+str,600,500);
+}
 //	$(document).on('click','#a1',function(){
 //             x_admin_show("编辑","member-edit.html",600,400);
 //  })
@@ -300,24 +389,28 @@ function member_del(obj, id) {
 	});
 }
 
-function delAll(argument) {
+function openMyGroup() {
 
 	var data = tableCheck.getData();
-	
-	layer.confirm('确认要删除吗？' + data, function(index) {
-		$.ajax({
-		type:"post",
-		url:host+"delete_teachers.php",
+	$.ajax({
+		type:"get",
+		url:host+"select_my_group.php",
   	data:{
-  		ids:data
+  		task_id:encodeURI(getQueryVariable("task_id"))
   	},
   	success:function(res){
         	var data=JSON.parse(res);
-        	layer.msg('删除成功', {icon: 1});
-          // 可以对父窗口进行刷新 
-          x_admin_father_reload();
+        	if(data.status){
+        		var a=document.createElement("a");
+	        	a.href="stu_task_info_group_student.php?group_id="+data.data.group_id+"&name="+data.data.name+"&task_id="+encodeURI(getQueryVariable("task_id"));
+	   				a.click();
+        	}else{
+        		layer.msg("未加入小组", {
+							icon: 5,
+							time: 1000
+						});
+        	}
    }
-  });
 //		//捉到所有被选中的，发异步进行删除
 //		layer.msg('删除成功', {
 //			icon: 1

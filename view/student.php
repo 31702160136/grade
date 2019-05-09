@@ -98,23 +98,7 @@
         				dataSum++;
         				var doEditItem=JSON.stringify(item);
         				var title=$("#title").prop("outerHTML");
-			        	var list='<tbody>'+
-			        	'<tr>'+
-				            	'<td>'+
-				              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-				            	'</td>'+
-				            	'<td>'+item.username+'</td>'+
-				            	'<td>'+item.name+'</td>'+
-				            	'<td>'+item.department+'</td>'+
-				            	'<td>'+item.class+'</td>'+
-				            	'<td>'+item.password+'</td>'+
-				            	'<td class="td-manage">'+
-				              		'<a title="编辑" onclick="edit('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
-				                		'<i class="layui-icon">&#xe642;</i>'+
-				              		'</a>'+
-				            	'</td>'+
-			          		'</tr>'+
-			          		'</tbody>';
+			        	var list=getList(item);
 			          	if(!is_title){
 			          		$("#table").html(title);
 			          		is_title=true;
@@ -221,23 +205,7 @@ function init(){
         		dataSum++;
 //      		$("#sumInfo").text(parseInt());
         		var doEditItem=JSON.stringify(item);
-	        	var list='<tbody>'+
-	        	'<tr>'+
-		            	'<td>'+
-		              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-		            	'</td>'+
-		            	'<td>'+item.username+'</td>'+
-		            	'<td>'+item.name+'</td>'+
-		            	'<td>'+item.department+'</td>'+
-		            	'<td>'+item.class+'</td>'+
-		            	'<td>'+item.password+'</td>'+
-		            	'<td class="td-manage">'+
-		              		'<a title="编辑" onclick="edit('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
-		                		'<i class="layui-icon">&#xe642;</i>'+
-		              		'</a>'+
-		            	'</td>'+
-	          		'</tr>'+
-	          		'</tbody>';
+	        	var list=getList(item);
 	          	$("#table").append(list);
     		});
     		$("#sumInfo").text("共有数据："+dataSum+ "条");
@@ -268,6 +236,27 @@ function getQueryVariable(variable)
                if(pair[0] == variable){return pair[1];}
        }
        return(false);
+}
+function getList(item){
+	var doEditItem=JSON.stringify(item);
+	var list='<tbody>'+
+	'<tr>'+
+	    	'<td>'+
+	      		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
+	    	'</td>'+
+	    	'<td>'+item.username+'</td>'+
+	    	'<td>'+item.name+'</td>'+
+	    	'<td>'+item.department+'</td>'+
+	    	'<td>'+item.class+'</td>'+
+	    	'<td>'+item.password+'</td>'+
+	    	'<td class="td-manage">'+
+	      		'<a title="编辑" onclick="edit('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
+	        		'<i class="layui-icon">&#xe642;</i>'+
+	      		'</a>'+
+	    	'</td>'+
+		'</tr>'+
+		'</tbody>';
+  	return list;
 }
 //编辑窗口
 function edit(item){

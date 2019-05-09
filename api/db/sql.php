@@ -105,5 +105,28 @@ class Sql{
 		mysqli_commit($this->link);
 		return $result;
 	}
+	
+	function deleteOne($array){
+		$str=null;
+		$data=$array["data"];
+		$count=count($data);
+		foreach($data as $key=>$value){
+			if(is_null($data[$key])){
+				unset($data[$key]);
+				$count--;
+				continue;
+			}
+			if($count>1){
+				$str=$str."`".$key."` = '".$value."' and ";
+			}else{
+				$str=$str."`".$key."` = '".$value."' ";
+			}
+			$count--;
+		}
+		$sql="delete from `".$array['table']."` where ".$str;
+		$result = mysqli_query($this->link, $sql);
+		mysqli_commit($this->link);
+		return $result;
+	}
 }
 ?>
