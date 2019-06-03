@@ -100,10 +100,11 @@
             console.log(data);
            	$.ajax({
            		type:"post",
-           		url:host+"create_teacher.php",
+           		url:host+"cre_teacher.php",
            		async:true,
            		data:data.field,
            		success:function(res){
+           			console.log(res);
            			var data=JSON.parse(res);
            			if(data.status){
            				layer.alert(data.message, {icon: 6},function () {

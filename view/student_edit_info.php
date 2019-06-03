@@ -14,6 +14,7 @@
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
+    <script type="text/javascript" src="./js/tools.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -89,7 +90,7 @@
         form.on('submit(add)', function(data){
           $.ajax({
           	type:"post",
-          	url:host+"modify_student_info.php",
+          	url:host+"mod_student_info.php",
           	async:true,
           	data:data.field,
           	success:function(res){
@@ -122,17 +123,6 @@ function init(){
 	$("#department").val(department);
 	$("#name").val(name);
 	$("#class").val(class_);
-}
-      //获取链接get参数
-function getQueryVariable(variable)
-{
-       var query = window.location.search.substring(1);
-       var vars = query.split("&");
-       for (var i=0;i<vars.length;i++) {
-               var pair = vars[i].split("=");
-               if(pair[0] == variable){return pair[1];}
-       }
-       return(false);
 }
   </script>
     <script>var _hmt = _hmt || []; (function() {

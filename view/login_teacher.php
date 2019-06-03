@@ -52,7 +52,7 @@
                 		if(data.status){
                 			location.href='task.php';
                 		}else{
-                			
+                			layer.msg(data.message, {icon: 5});
                 		}
                 	}
                 });

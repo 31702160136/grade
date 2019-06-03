@@ -118,7 +118,7 @@
             console.log(data);
            	$.ajax({
            		type:"post",
-           		url:host+"create_student.php",
+           		url:host+"cre_student.php",
            		async:true,
            		data:data.field,
            		success:function(res){

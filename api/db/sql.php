@@ -3,6 +3,7 @@ include_once "./../config/source.php";
 //		$data=array("jj"=>"jj","j3j"=>"jj1");
 class Sql{
 	private $link=null;
+	private $is_test=FALSE;
 	function __construct(){
 		$source=new Source();
 		$this->link=$source->getSource();
@@ -12,6 +13,10 @@ class Sql{
 	 * 
 	 * */
 	function query($sql){
+		if($this->is_test){
+			echo $sql;
+			exit(0);
+		}
 		$result = mysqli_query($this->link, $sql); //查询
 		$array=array();
 		if(mysqli_num_rows($result)>0){
@@ -50,6 +55,10 @@ class Sql{
 			$count--;
 		}
 		$sql="insert into `".$array['table']."` (".$str1.") values (".$str2.")";
+		if($this->is_test){
+			echo $sql;
+			exit(0);
+		}
 		$result = mysqli_query($this->link, $sql);
 		mysqli_commit($this->link);
 		return $result;
@@ -79,6 +88,10 @@ class Sql{
 			$count--;
 		}
 		$sql="update `".$array['table']."` set ".$str." where id=".$array['id'];
+		if($this->is_test){
+			echo $sql;
+			exit(0);
+		}
 		$result = mysqli_query($this->link, $sql);
 		mysqli_commit($this->link);
 		return $result;
@@ -101,6 +114,10 @@ class Sql{
 			}
 		}
 		$sql="delete from `".$array['table']."` where `".$array['fields']."` in (".$str.")";
+		if($this->is_test){
+			echo $sql;
+			exit(0);
+		}
 		$result = mysqli_query($this->link, $sql);
 		mysqli_commit($this->link);
 		return $result;
@@ -124,6 +141,10 @@ class Sql{
 			$count--;
 		}
 		$sql="delete from `".$array['table']."` where ".$str;
+		if($this->is_test){
+			echo $sql;
+			exit(0);
+		}
 		$result = mysqli_query($this->link, $sql);
 		mysqli_commit($this->link);
 		return $result;

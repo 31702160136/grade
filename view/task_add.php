@@ -53,11 +53,38 @@
           </div>
           <div class="layui-form-item">
               <label for="teacher" class="layui-form-label">
-                  <span class="x-red">*</span>老师
+                  <span class="x-red">*</span>教师评分权重
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="teacher" name="teacher_id" required="" lay-verify="teacher"
+                  <input type="number" id="teacher" name="weight_teacher" required="" lay-verify="teacher"
                   autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  %
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="teacher" class="layui-form-label">
+                  <span class="x-red">*</span>小组互评权重
+              </label>
+              <div class="layui-input-inline">
+                  <input type="number" id="teacher" name="weight_group" required="" lay-verify="teacher"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  %
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="teacher" class="layui-form-label">
+                  <span class="x-red">*</span>组内成员互评权重
+              </label>
+              <div class="layui-input-inline">
+                  <input type="number" id="teacher" name="weight_group_in" required="" lay-verify="teacher"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  %
               </div>
           </div>
           <div class="layui-form-item">
@@ -91,46 +118,42 @@
           });
 		//监听提交
           form.on('submit(add)', function(data){
-            console.log(data);
-           	$.ajax({
-           		type:"post",
-           		url:host+"create_task.php",
-           		async:true,
-           		data:data.field,
-           		success:function(res){
-           			var data=JSON.parse(res);
-           			if(data.status){
-           				layer.alert(data.message, {icon: 6},function () {
-                		//关闭当前frame
-                		x_admin_close();
-                		// 可以对父窗口进行刷新 
-                		x_admin_father_reload();
-            			});
-           			}else{
-           				layer.msg(data.message, {icon: 5},function () {
-                		
-            			});
-           			}
-           		}
-           	});
+          	var weight_teacher=parseInt(data.field.weight_teacher);
+          	var weight_group=parseInt(data.field.weight_group);
+          	var weight_group_in=parseInt(data.field.weight_group_in);
+          	if(!(weight_teacher<=100&&weight_group<=100&&weight_group_in<=100)){
+          		layer.msg("权重不能大于100", {icon: 5});
+          	}else if((weight_teacher+weight_group+weight_group_in)>100){
+          		layer.msg("总权重不能大于100", {icon: 5});
+          	}else{
+           		$.ajax({
+	           		type:"post",
+	           		url:host+"cre_task.php",
+	           		async:true,
+	           		data:data.field,
+	           		success:function(res){
+	           			console.log(res);
+	           			var data=JSON.parse(res);
+	           			if(data.status){
+	           				layer.alert(data.message, {icon: 6},function () {
+	                		//关闭当前frame
+	                		x_admin_close();
+	                		// 可以对父窗口进行刷新 
+	                		x_admin_father_reload();
+	            			});
+	           			}else{
+	           				layer.msg(data.message, {icon: 5},function () {
+	                		
+	            			});
+	           			}
+	           		}
+	           	});
+           	}
             return false;
           });
           
           
         });
-init();
-function init(){
-	$.ajax({
-	type:"post",
-	url:host+"get_user_info.php",
-   		async:true,
-   		success:function(res){
-   			var result=JSON.parse(res);
-   			var data=result.data;
-   			$("#teacher").val(data.name);
-   		}
-   });
-}
     </script>
     <script>var _hmt = _hmt || []; (function() {
         var hm = document.createElement("script");

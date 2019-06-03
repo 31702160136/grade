@@ -12,6 +12,7 @@
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
+    <script type="text/javascript" src="./js/tools.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -22,22 +23,21 @@
   <body>
     <div class="x-body">
       <div class="layui-row">
-        <form class="layui-form layui-col-md12 x-so" action="student.php" method="get">
+        <div class="layui-form layui-col-md12 x-so">
           <div class="layui-input-inline">
-              <select name="area" lay-filter="area">
+              <select id="condition" name="area" lay-filter="area">
                 <option value="username">学号</option>
                 <option value="name">姓名</option>
               </select>
           </div>
-          <input type="text" name="value"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
-          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-        </form>
+          <input type="text" id="sreach"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
+          <button class="layui-btn" onclick="sreach()"><i class="layui-icon">&#xe615;</i></button>
+        </div>
       </div>
       <xblock>
         <button class="layui-btn" onclick="add()"><i class="layui-icon"></i>添加</button>
-        <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
       </xblock>
-      <table class="layui-table x-admin"  id="table">
+      <table class="layui-table x-admin" >
         <thead id="title">
           <tr>
             <th>
@@ -48,45 +48,60 @@
             <th>系部</th>
             <th>班级</th></tr>
         </thead>
+        <tbody id="table">
+        	
+        </tbody>
       </table>
-      <!--<div class="page">
-        <div>
-          <a class="prev"  onclick="jian()" style="cursor:pointer">&lt;&lt;</a>
-          <a id="page1" class="num" onclick="pageOn('page1')" style="cursor:pointer">0</a>
-          <span id="page2" class="current" onclick="pageOn('page2')" style="cursor:pointer">1</span>
-          <a id="page3" class="num" onclick="pageOn('page3')" style="cursor:pointer">2</a>
-          <a id="page4" class="num" onclick="pageOn('page4')" style="cursor:pointer">3</a>
-          <a id="sum" class="num" onclick="pageOn('sum')" style="cursor:pointer">489</a>
-          <a class="next"  onclick="jia()" style="cursor:pointer">&gt;&gt;</a>
-        </div>
-      </div>-->
     </div>
 <script>
-			//初始化
-      init();
-    	layui.use(['form','laydate'], function(){
-        var laydate = layui.laydate;
-        var form = layui.form;
-        //执行一个laydate实例
-        form.on('submit(sreach)', function(data){
-        	$.ajax({
-        		type:"get",
-        		url:host+"select_sreach_student.php",
-        		async:true,
-        		data:{
-        			key:data.field.area,
-        			value:data.field.value
-        		},
-        		success:function(res){
-        			var data=JSON.parse(res);
-        			var is_title=false;
-        			var dataSum=0;
-        			$(data.data).each(function(index,item){
-        				dataSum++;
-        				var doEditItem=JSON.stringify(item);
-        				var title=$("#title").prop("outerHTML");
-			        	var list='<tbody>'+
-			        	'<tr>'+
+var pg_ini={
+	page:1,
+	size:999,
+	task_id:getQueryVariable("task_id")
+}
+//初始化数据
+queryTask(pg_ini);
+//绑定多选框事件
+reCheckbox();
+function queryTask(data){
+	if($("#condition").val()=="username"){
+		data["username_s"]=$("#sreach").val();
+	}else if($("#condition").val()=="name"){
+		data["name"]=$("#sreach").val();
+	}
+	$.ajax({
+		type:"get",
+		url:host+"sel_students.php",
+		async:true,
+		data:data,
+		success:function(res){
+			var data=JSON.parse(res);
+			console.log(data);
+			if(data.status){
+				$("#pages").text(data.data.pages);
+				$("#go").html("");
+				$("#table").html("");
+				var at=parseInt($("#at").prop("innerText"));
+				//处理跳页
+				for(var i=0;i<data.data.pages;i++){
+					if(i+1==at){
+						$("#go").append('<option value="'+(i+1)+'" selected>'+(i+1)+'</option>');
+					}else{
+						$("#go").append('<option value="'+(i+1)+'">'+(i+1)+'</option>');
+					}
+				}
+				//信息列表
+				$.each(data.data.data, function(index,item) {
+					var list=getList(item);
+					$("#table").append(list);
+				});
+			}
+		}
+	});
+}
+function getList(item){
+	var doEditItem=JSON.stringify(item);
+    	var list='<tr>'+
 				            	'<td>'+
 				              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
 				            	'</td>'+
@@ -94,156 +109,20 @@
 				            	'<td>'+item.name+'</td>'+
 				            	'<td>'+item.department+'</td>'+
 				            	'<td>'+item.class+'</td>'+
-			          		'</tr>'+
-			          		'</tbody>';
-			          	if(!is_title){
-			          		$("#table").html(title);
-			          		is_title=true;
-			          	}
-			          	$("#table").append(list);
-		    				});
-		    				$("#sumInfo").text("共有数据："+dataSum+ "条");
-        		}
-        	});
-            return false;
-        });
-         
-        laydate.render({
-          elem: '#start' //指定元素
-        });
+			          		'</tr>';
+  	return list;
+}
 
-        //执行一个laydate实例
-        laydate.render({
-          elem: '#end' //指定元素
-        });
-      });
-//  页数变量
-    var pageSum=0;
-    //页数加
-   	function jia(){
-   		if(parseInt($("#page2").prop("innerHTML"))<pageSum){
-   			var page=parseInt($("#page2").prop("innerHTML"))+1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
-   		}
-   	}
-   	//页数减
-   	function jian(){
-   		if(parseInt($("#page2").prop("innerHTML"))>1){
-   			var page=parseInt($("#page2").prop("innerHTML"))-1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page;
-   		}
-   	}
-   	//跳页
-   	function pageOn(id){
-   		var page=parseInt($("#"+id).prop("innerHTML"));
-   		window.location.href=window.location.origin+window.location.pathname+"?page="+page;
-   	}
-//初始化
-function init(){
-	var page=getQueryVariable("page");
-	//页数初始化
-	if(page){
-		$("#page1").text(parseInt(page)-1);
- 		$("#page2").text(parseInt(page));
- 		$("#page3").text(parseInt(page)+1);
- 		$("#page4").text(parseInt(page)+2);
-	}else{
-		page=1;
+function sreach(){
+	var data={
+		page:1,
+		size:pg_ini.size,
+		task_id:getQueryVariable("task_id"),
 	}
-	//页数初始化
-	$.ajax({
- 			url:host+"select_student_sum.php",
- 			success:function(res){
-   				var data=JSON.parse(res);
-   				pageSum=parseInt(data.data);
-   				//页数范围控制
-   				if(pageSum=>4){
-   					$("#sum").text(data.data);
-   				}else if(pageSum==2){
-   					$("#page1").text(parseInt(page)-1);
-   					$("#page2").text(parseInt(page));
-   					$("#page3").text(parseInt(page)+1);
-   					$("#page4").hide();
-   					$("#sum").hide();
-   				}else if(pageSum==1){
-   					$("#page1").text(parseInt(page)-1);
-   					$("#page2").text(parseInt(page));
-   					$("#page3").hide();
-   					$("#page4").hide();
-   					$("#sum").hide();
-   				}
-   				var page2=parseInt($("#page2").prop("innerHTML"));
-   			if((page2+2)===pageSum||(page2+1)===pageSum){
-   				$("#page4").hide();
-   				$("#sum").hide();
-   			}
-   			if(page2===pageSum){
-   				$("#page3").hide();
-   				$("#page4").hide();
-   				$("#sum").hide();
-   			}
-   			if(page2===1){
-   				$("#page1").hide();
-   			}
-   			//页数范围控制
- 			}
- 		});
- 	//查询学生列表
-	$.ajax({
-		url:host+"select_students.php",
-  	data:{
-  		page:$("#page2").prop("innerHTML"),
-  		size:99999999
-  	},
-  	success:function(res){
-        	var data=JSON.parse(res);
-        	var dataSum=0;
-        	$(data.data).each(function(index,item){
-        		dataSum++;
-//      		$("#sumInfo").text(parseInt());
-        		var doEditItem=JSON.stringify(item);
-	        	var list='<tbody>'+
-	        	'<tr>'+
-		            	'<td>'+
-		              		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
-		            	'</td>'+
-		            	'<td>'+item.username+'</td>'+
-		            	'<td>'+item.name+'</td>'+
-		            	'<td>'+item.department+'</td>'+
-		            	'<td>'+item.class+'</td>'+
-	          		'</tr>'+
-	          		'</tbody>';
-	          	$("#table").append(list);
-    		});
-    		$("#sumInfo").text("共有数据："+dataSum+ "条");
-    	}
-  });
+	queryTask(data);
 }
-//渲染多选框事件
-$(document).on('click', '#icheckbox',function() {
-	if($(this).hasClass('layui-form-checked')) {
-		$(this).removeClass('layui-form-checked');
-		if($(this).hasClass('header')) {
-			$(".x-admin .layui-form-checkbox").removeClass('layui-form-checked');
-		}
-	} else {
-		$(this).addClass('layui-form-checked');
-		if($(this).hasClass('header')) {
-			$(".x-admin .layui-form-checkbox").addClass('layui-form-checked');
-		}
-	}
-});
-//获取链接get参数
-function getQueryVariable(variable)
-{
-       var query = window.location.search.substring(1);
-       var vars = query.split("&");
-       for (var i=0;i<vars.length;i++) {
-               var pair = vars[i].split("=");
-               if(pair[0] == variable){return pair[1];}
-       }
-       return(false);
-}
+
+
 
 //	$(document).on('click','#a1',function(){
 //             x_admin_show("编辑","member-edit.html",600,400);
@@ -292,13 +171,14 @@ function add(argument) {
 	var data = tableCheck.getData();
 	$.ajax({
 		type:"post",
-		url:host+"create_member.php",
+		url:host+"cre_member.php",
 	  	data:{
 	  		task_id:encodeURI(getQueryVariable("task_id")),
 	  		group_id:encodeURI(getQueryVariable("group_id")),
 	  		student_id:data
 	  	},
 	  	success:function(res){
+	  				console.log(res);
 	        	var data=JSON.parse(res);
 	        	console.log(data);
 	          if(data.status){

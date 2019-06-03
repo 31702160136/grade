@@ -51,7 +51,7 @@
                 	success: function(res) {
                 		var data=JSON.parse(res);
                 		if(data.status){
-                			location.href='stu_task.php';
+                			location.href='task.php';
                 		}else{
                 			
                 		}

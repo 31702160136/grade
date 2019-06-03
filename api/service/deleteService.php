@@ -5,7 +5,7 @@ include_once "./../dao/adminDao.php";
 include_once "./../dao/groupDao.php";
 include_once "./../dao/studentDao.php";
 include_once "./../dao/studentScoreDao.php";
-include_once "./../dao/taskDao.php";
+include_once "./../dao/task_dao.php";
 include_once "./../dao/teacherDao.php";
 include_once "./../dao/studentGroupDao.php";
 class DeleteService {

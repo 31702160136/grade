@@ -12,6 +12,8 @@
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
+    <script type="text/javascript" src="./js/tools.js"></script>
+    <script type="text/javascript" src="./js/is_login.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -31,23 +33,24 @@
     </div>
     <div class="x-body">
       <div class="layui-row">
-        <form class="layui-form layui-col-md12 x-so" action="student.php" method="get">
+        <div class="layui-form layui-col-md12 x-so">
           <div class="layui-input-inline">
-              <select name="area" lay-filter="area">
+              <select id="condition">
                 <option value="username">学号</option>
                 <option value="name">姓名</option>
               </select>
           </div>
-          <input type="text" name="value"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
-          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-        </form>
+          <input type="text" id="sreach"  placeholder="请输入查询信息" autocomplete="off" class="layui-input">
+          <button class="layui-btn" onclick="sreach()"><i class="layui-icon">&#xe615;</i></button>
+        </div>
       </div>
       <xblock>
-        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
-        <button class="layui-btn" onclick="add()"><i class="layui-icon"></i>添加成员</button>
-        <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
+      	<button id="breakGroup" class="layui-btn" onclick="break_group()"><i class="layui-icon"></i>退出小组</button>
+        <button id="del" class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
+        <button id="dissolveGroup" class="layui-btn" onclick="dissolve_group()"><i class="layui-icon"></i>解散小组</button>
+        <button id="add" class="layui-btn" onclick="add()"><i class="layui-icon"></i>添加成员</button>
       </xblock>
-      <table class="layui-table x-admin"  id="table">
+      <table class="layui-table x-admin" >
         <thead id="title">
           <tr>
             <th>
@@ -55,211 +58,218 @@
             </th>
             <th>学号</th>
             <th>姓名</th>
-            <th>互评总分值</th>
+            <th>分数</th>
             <th>组内互评</th>
           </tr>
         </thead>
+        <tbody id="table">
+        	
+        </tbody>
       </table>
       <div class="page">
         <div>
-          <a class="prev"  onclick="jian()" style="cursor:pointer">&lt;&lt;</a>
-          <a id="page1" class="num" onclick="pageOn('page1')" style="cursor:pointer">0</a>
-          <span id="page2" class="current" onclick="pageOn('page2')" style="cursor:pointer">1</span>
-          <a id="page3" class="num" onclick="pageOn('page3')" style="cursor:pointer">2</a>
-          <a id="page4" class="num" onclick="pageOn('page4')" style="cursor:pointer">3</a>
-          <a id="sum" class="num" onclick="pageOn('sum')" style="cursor:pointer">489</a>
-          <a class="next"  onclick="jia()" style="cursor:pointer">&gt;&gt;</a>
+        	<a style="border: none;">共有<span id="pages" style="border: none;">1</span>页</a>
+        	<a style="border: none;">当前<span id="at" style="border: none;">1</span>页</a>
+          	<a class="prev"  onclick="back()" style="cursor:pointer">上一页</a>
+          	<a class="next"  onclick="next()" style="cursor:pointer">下一页</a>
+	      	<a style="border: none;">
+	      		<select id="go" style="height: 30px;">
+	      		</select>
+	      	</a>
         </div>
       </div>
     </div>
 <script>
-			//初始化
-      init();
-    	layui.use(['form','laydate'], function(){
-        var laydate = layui.laydate;
-        var form = layui.form;
-        //执行一个laydate实例
-        form.on('submit(sreach)', function(data){
-        	$.ajax({
-        		type:"get",
-        		url:host+"select_sreach_member.php",
-        		async:true,
-        		data:{
-        			group_id:getQueryVariable("group_id"),
-        			key:data.field.area,
-        			value:data.field.value
-        		},
-        		success:function(res){
-        			var data=JSON.parse(res);
-        			var is_title=false;
-        			var dataSum=0;
-        			$(data.data).each(function(index,item){
-        				dataSum++;
-        				var title=$("#title").prop("outerHTML");
-			        	var list=getList(item);
-			          	if(!is_title){
-			          		$("#table").html(title);
-			          		is_title=true;
-			          	}
-			          	$("#table").append(list);
-		    				});
-		    				$("#sumInfo").text("共有数据："+dataSum+ "条");
-        		}
-        	});
-            return false;
-        });
-         
-        laydate.render({
-          elem: '#start' //指定元素
-        });
-
-        //执行一个laydate实例
-        laydate.render({
-          elem: '#end' //指定元素
-        });
-      });
-//  页数变量
-    var pageSum=0;
-    //页数加
-   	function jia(){
-   		if(parseInt($("#page2").prop("innerHTML"))<pageSum){
-   			var page=parseInt($("#page2").prop("innerHTML"))+1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&group_id="+getQueryVariable("group_id");
-   		}
-   	}
-   	//页数减
-   	function jian(){
-   		if(parseInt($("#page2").prop("innerHTML"))>1){
-   			var page=parseInt($("#page2").prop("innerHTML"))-1;
-   			window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&group_id="+getQueryVariable("group_id");
-   		}
-   	}
-   	//跳页
-   	function pageOn(id){
-   		var page=parseInt($("#"+id).prop("innerHTML"));
-   		window.location.href=window.location.origin+window.location.pathname+"?page="+page+"&group_id="+getQueryVariable("group_id");
-   	}
-//初始化
-function init(){
-	$("#g_title").text("成员列表--->"+decodeURI(getQueryVariable("name")));
-	var page=getQueryVariable("page");
-	//页数初始化
-	if(page){
-		$("#page1").text(parseInt(page)-1);
- 		$("#page2").text(parseInt(page));
- 		$("#page3").text(parseInt(page)+1);
- 		$("#page4").text(parseInt(page)+2);
-	}else{
-		page=1;
-	}
-	//页数初始化
-	$.ajax({
- 			url:host+"select_member_sum.php",
- 			data:{
- 					"group_id":getQueryVariable("group_id")
- 			},
- 			success:function(res){
- 				console.log(res);
-   				var data=JSON.parse(res);
-   				pageSum=parseInt(data.data);
-   				//页数范围控制
-   				if(pageSum=>4){
-   					$("#sum").text(data.data);
-   				}else if(pageSum==2){
-   					$("#page1").text(parseInt(page)-1);
-   					$("#page2").text(parseInt(page));
-   					$("#page3").text(parseInt(page)+1);
-   					$("#page4").hide();
-   					$("#sum").hide();
-   				}else if(pageSum==1){
-   					$("#page1").text(parseInt(page)-1);
-   					$("#page2").text(parseInt(page));
-   					$("#page3").hide();
-   					$("#page4").hide();
-   					$("#sum").hide();
-   				}
-   				var page2=parseInt($("#page2").prop("innerHTML"));
-   			if((page2+2)===pageSum||(page2+1)===pageSum){
-   				$("#page4").hide();
-   				$("#sum").hide();
-   			}
-   			if(page2===pageSum){
-   				$("#page3").hide();
-   				$("#page4").hide();
-   				$("#sum").hide();
-   			}
-   			if(page2===1){
-   				$("#page1").hide();
-   			}
-   			//页数范围控制
- 			}
- 		});
- 	//查询任务列表
-	$.ajax({
-		url:host+"select_member.php",
-  	data:{
-  		"group_id":getQueryVariable("group_id"),
-  		page:$("#page2").prop("innerHTML"),
-  		size:10
-  	},
-  	success:function(res){
-        	var data=JSON.parse(res);
-    		if(data.status){
-        	var dataSum=0;
-        	$(data.data).each(function(index,item){
-        		dataSum++;
-//      		$("#sumInfo").text(parseInt());
-	        	var list=getList(item);
-	          	$("#table").append(list);
-    		});
-    		$("#sumInfo").text("共有数据："+dataSum+ "条");
-    		}else{
-	        window.location.href="login_teacher.php";
-	    	}
-    	}
-  });
+var pg_ini={
+	page:1,
+	size:10,
+	task_id:getQueryVariable("task_id"),
+	group_id:getQueryVariable("group_id")
 }
-//渲染多选框事件
-$(document).on('click', '#icheckbox',function() {
-	if($(this).hasClass('layui-form-checked')) {
-		$(this).removeClass('layui-form-checked');
-		if($(this).hasClass('header')) {
-			$(".x-admin .layui-form-checkbox").removeClass('layui-form-checked');
+//用户类型初始化
+init();
+//初始化数据
+queryTask(pg_ini);
+//绑定多选框事件
+reCheckbox();
+$("#dissolveGroup").hide();
+$("#del").hide();
+$("#add").hide();
+$("#breakGroup").hide();
+function init(){
+	$.ajax({
+		type:"get",
+		url:host+"user_type.php",
+		async:true,
+		success:function(res){
+			var data=JSON.parse(res);
+			is_login(data.data.role);
+			console.log(data);
+			if(data.status){
+				switch(data.data.role){
+					case "admin":
+						
+						break;
+					case "teacher":
+						student();
+						break;
+					case "student":
+						student();
+						break;
+				}
+			}
 		}
-	} else {
-		$(this).addClass('layui-form-checked');
-		if($(this).hasClass('header')) {
-			$(".x-admin .layui-form-checkbox").addClass('layui-form-checked');
+	});
+}
+function student(){
+	//学生定位
+	$.ajax({
+		type:"get",
+		url:host+"student_location.php",
+		async:true,
+		data:{
+			group_id:getQueryVariable("group_id")
+		},
+		success:function(res){
+			console.log(res);
+			var data=JSON.parse(res);
+			console.log(data);
+			//判断是否为组成员
+			if(data.data.is_menber){
+				$("#breakGroup").show();
+			}
+			//判断是否为组队长
+			if(data.data.captain){
+				$("#breakGroup").hide();
+				$("#dissolveGroup").show();
+				$("#del").show();
+				$("#add").show();
+			}else{
+				
+			}
 		}
+	});
+}
+function queryTask(data){
+	if($("#condition").val()=="username"){
+		data["username_s"]=$("#sreach").val();
+	}else if($("#condition").val()=="name"){
+		data["name_s"]=$("#sreach").val();
 	}
-});
-//获取链接get参数
-function getQueryVariable(variable)
-{
-       var query = window.location.search.substring(1);
-       var vars = query.split("&");
-       for (var i=0;i<vars.length;i++) {
-               var pair = vars[i].split("=");
-               if(pair[0] == variable){return pair[1];}
-       }
-       return(false);
+	$.ajax({
+		type:"get",
+		url:host+"sel_member.php",
+		async:true,
+		data:data,
+		success:function(res){
+			console.log(res);
+			var data=JSON.parse(res);
+			console.log(data);
+			if(data.status){
+				$("#pages").text(data.data.pages);
+				$("#go").html("");
+				$("#table").html("");
+				var at=parseInt($("#at").prop("innerText"));
+				//处理跳页
+				for(var i=0;i<data.data.pages;i++){
+					if(i+1==at){
+						$("#go").append('<option value="'+(i+1)+'" selected>'+(i+1)+'</option>');
+					}else{
+						$("#go").append('<option value="'+(i+1)+'">'+(i+1)+'</option>');
+					}
+				}
+				//信息列表
+				$.each(data.data.data, function(index,item) {
+					var list=getList(item);
+					$("#table").append(list);
+				});
+			}
+		}
+	});
 }
 function getList(item){
 	var doEditItem=JSON.stringify(item);
-	var list='<tbody>'+
-	    	'<tr>'+
+	var score="";
+	if(item.score!="自己"){
+		score='<a title="评分" onclick="editScore('+doEditItem.replace(/\"/g,"'")+')" href="javascript:;">'+
+                	'<i class="layui-icon">&#xe642;</i>'+
+              	'</a>';
+	}
+    	var list='<tr>'+
             	'<td>'+
               		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
             	'</td>'+
             	'<td>'+item.username+'</td>'+
             	'<td>'+item.name+'</td>'+
-            	'<td>'+item.score_percent+'</td>'+
+            	'<td>'+item.score+
+            		score+
+            	'</td>'+
             	'<td class="td-manage">'+
               	'<button class="layui-btn" onclick="select('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看互评</button>'+
             	'</td>'+
-      		'</tr>'+
-  		'</tbody>';
+      		'</tr>';
   	return list;
+}
+//编辑窗口
+function back(){
+	var page=parseInt($("#at").prop("innerText"));
+	var pages=parseInt($("#pages").prop("innerText"));
+	if(page>1){
+		page--;
+		var data={
+			page:page,
+			size:pg_ini.size,
+			task_id:getQueryVariable("task_id"),
+			group_id:getQueryVariable("group_id")
+		}
+		if($("#condition").val()=="username"){
+			data["username_s"]=$("#sreach").val();
+		}else if($("#condition").val()=="name"){
+			data["name"]=$("#sreach").val();
+		}
+		queryTask(data);
+		$("#at").text(page);
+	}
+}
+//编辑窗口
+function next(item){
+	var page=parseInt($("#at").prop("innerText"));
+	var pages=parseInt($("#pages").prop("innerText"));
+	if(page<pages){
+		page++;
+		var data={
+			page:page,
+			size:pg_ini.size,
+			task_id:getQueryVariable("task_id"),
+			group_id:getQueryVariable("group_id")
+		}
+		queryTask(data);
+		$("#at").text(page);
+	}
+}
+//监听下拉框点击事件
+window.onload = function () {
+    document.getElementById('go').addEventListener('change',function(){
+    	var page=parseInt($("#go").val());
+    	$("#at").text(page);
+    	var data={
+				page:page,
+				size:pg_ini.size,
+				task_id:getQueryVariable("task_id"),
+			group_id:getQueryVariable("group_id")
+			}
+			queryTask(data);
+    },false);
+}
+function sreach(){
+	var data={
+		page:1,
+		size:pg_ini.size,
+		task_id:getQueryVariable("task_id"),
+		group_id:getQueryVariable("group_id")
+	}
+	queryTask(data);
+	$("#at").text(1);
 }
 
 function add(){
@@ -267,10 +277,54 @@ function add(){
 	console.log(str);
 	x_admin_show("编辑","task_group_add_member.php?"+str,600,500);
 }
-
+function dissolve_group(){
+	$.ajax({
+		type:"post",
+		url:host+"del_group_dissolve.php",
+		data:{
+			group_id:getQueryVariable("group_id"),
+			task_id:getQueryVariable("task_id")
+		},
+		success:function(res){
+			console.log(res);
+			var data=JSON.parse(res);
+			if (data.status) {
+				layer.alert(data.message, {icon: 6},function () {
+					history.back(-1);
+				});
+			}else{
+				layer.msg(data.message, {icon: 2});
+			}
+		}
+	});
+}
+function break_group(){
+	$.ajax({
+		type:"post",
+		url:host+"del_break_group.php",
+		data:{
+			group_id:getQueryVariable("group_id")
+		},
+		success:function(res){
+			console.log(res);
+			var data=JSON.parse(res);
+			if (data.status) {
+				layer.alert(data.message, {icon: 6},function () {
+					history.back(-1);
+				});
+			}else{
+				layer.msg('退出失败', {icon: 2});
+			}
+		}
+	});
+}
+function editScore(item){
+	var str="student_group_id="+item.id+"&index=student";
+	x_admin_show("评分","edit_score.php?"+str,600,200);
+}
 function select(item){
 	var str="student_group_id="+item.id;
-	x_admin_show("编辑","student_score.php?"+str,600,500);
+	x_admin_show("互评","student_score.php?"+str,600,500);
 }
 
 //	$(document).on('click','#a1',function(){
@@ -322,15 +376,21 @@ function delAll(argument) {
 	layer.confirm('确认要删除吗？' + data, function(index) {
 		$.ajax({
 		type:"post",
-		url:host+"delete_member.php",
+		url:host+"del_member.php",
   	data:{
+  		group_id:getQueryVariable("group_id"),
   		ids:data
   	},
   	success:function(res){
+  		console.log(res);
         	var data=JSON.parse(res);
-        	layer.msg('删除成功', {icon: 1});
-          // 可以对父窗口进行刷新 
-          location.replace(location.href);
+        	if(data.status){
+        		layer.msg(data.message, {icon: 1});
+	          // 可以对父窗口进行刷新 
+	          location.replace(location.href);
+        	}else{
+        		layer.msg(data.message, {icon: 2});
+        	}
    }
   });
 //		//捉到所有被选中的，发异步进行删除

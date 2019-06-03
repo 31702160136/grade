@@ -64,17 +64,18 @@
           });
 		//监听提交
           form.on('submit(add)', function(data){
-            console.log(data);
            	$.ajax({
            		type:"post",
-           		url:host+"create_group.php",
+           		url:host+"cre_group.php",
            		async:true,
            		data:{
            			"name":data.field.name,
            			"task_id":getQueryVariable("task_id")
            		},
            		success:function(res){
+           			console.log(res);
            			var data=JSON.parse(res);
+           			console.log(data);
            			if(data.status){
            				layer.alert(data.message, {icon: 6},function () {
                 		//关闭当前frame

@@ -12,10 +12,12 @@
     <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript"src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
     <script src="./lib/layui/layui.js" charset="utf-8"></script>
-
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script type="text/javascript" src="./js/cookie.js"></script>
+    <script type="text/javascript" src="./js/host.js"></script>
+    <script type="text/javascript" src="./js/is_login.js"></script>
     <script>
+    	is_login("admin");
         // 是否开启刷新记忆tab功能
         // var is_remember = false;
     </script>
@@ -23,7 +25,7 @@
 <body>
     <!-- 顶部开始 -->
     <div class="container">
-        <div class="logo"><a href="./index.html">X-admin v2.1</a></div>
+        <div class="logo"><a href="./index.html">实训平台</a></div>
         <div class="left_open">
             <i title="展开左侧栏" class="iconfont">&#xe699;</i>
         </div>
@@ -58,12 +60,6 @@
       <div id="side-nav">
         <ul id="nav">
             <li>
-                <a _href="task.php">
-                    <i class="iconfont">&#xe6b8;</i>
-                    <cite>任务列表</cite>
-                </a>
-            </li>
-            <li>
                 <a _href="student.php">
                     <i class="iconfont">&#xe6b8;</i>
                     <cite>学生管理</cite>
@@ -95,7 +91,7 @@
           </div>
           <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
-                <iframe src='./welcome.html' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+                <iframe src='./student.php' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
             </div>
           </div>
           <div id="tab_show"></div>

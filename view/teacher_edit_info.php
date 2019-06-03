@@ -14,6 +14,7 @@
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
+    <script type="text/javascript" src="./js/tools.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -71,7 +72,7 @@
         form.on('submit(add)', function(data){
           $.ajax({
           	type:"post",
-          	url:host+"modify_teacher_info.php",
+          	url:host+"mod_teacher_info.php",
           	async:true,
           	data:data.field,
           	success:function(res){
@@ -101,24 +102,7 @@ function init(){
 	$("#password").val(password_);
 	$("#name").val(name);
 }
-      //获取链接get参数
-function getQueryVariable(variable)
-{
-       var query = window.location.search.substring(1);
-       var vars = query.split("&");
-       for (var i=0;i<vars.length;i++) {
-               var pair = vars[i].split("=");
-               if(pair[0] == variable){return pair[1];}
-       }
-       return(false);
-}
   </script>
-    <script>var _hmt = _hmt || []; (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();</script>
   </body>
 
 </html>
