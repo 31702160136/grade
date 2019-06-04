@@ -47,9 +47,9 @@ $(function  () {
 		    		var data=JSON.parse(res);
 		    		if(data.status){
 	    				location.href='index.php';
-	        		}else{
-	        			
-	        		}
+        		}else{
+        			layer.msg(data.message, {icon: 5});
+        		}
 	        	}
 	        });
 		        return false;

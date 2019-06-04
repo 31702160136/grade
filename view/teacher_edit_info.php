@@ -70,25 +70,29 @@
         ,layer = layui.layer;
         //监听提交
         form.on('submit(add)', function(data){
-          $.ajax({
-          	type:"post",
-          	url:host+"mod_teacher_info.php",
-          	async:true,
-          	data:data.field,
-          	success:function(res){
-          		var data=JSON.parse(res);
-          		if(data.status){
-	          		layer.alert("修改成功", {icon: 6},function () {
-	              	// 获得frame索引
-	              	var index = parent.layer.getFrameIndex(window.name);
-	              	//关闭当前frame
-	              	parent.layer.close(index);
-	              	x_admin_father_reload();//刷新父窗口
-	          		});
-          		}
-          	}
-          });
-          return false;
+        	if(data.field.name.trim()==""||data.field.password.trim()==""){
+	        	layer.msg("信息不完整", {icon: 5});
+	        }else{
+         		$.ajax({
+	          	type:"post",
+	          	url:host+"mod_teacher_info.php",
+	          	async:true,
+	          	data:data.field,
+	          	success:function(res){
+	          		var data=JSON.parse(res);
+	          		if(data.status){
+		          		layer.alert("修改成功", {icon: 6},function () {
+		              	// 获得frame索引
+		              	var index = parent.layer.getFrameIndex(window.name);
+		              	//关闭当前frame
+		              	parent.layer.close(index);
+		              	x_admin_father_reload();//刷新父窗口
+		          		});
+	          		}
+	          	}
+	          });
+         	}
+         	return false;
         });
       });
 init();
