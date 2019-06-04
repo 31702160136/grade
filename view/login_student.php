@@ -33,46 +33,37 @@
         <div><a href="javascript:x_admin_show('注册账号','student_add.php',600,500);">注册账号</a></div>
     </div>
 
-    <script>
-        $(function  () {
-            layui.use('form', function(){
-              var form = layui.form;
-              // layer.msg('玩命卖萌中', function(){
-              //   //关闭后的操作
-              //   });
-              //监听提交
-              form.on('submit(login)', function(data){
-                // alert(888)
-                $.ajax({
-                	type: "post",
-                	url: host+"login_student.php",
-                	async: true,
-                	data: data.field,
-                	success: function(res) {
-                		var data=JSON.parse(res);
-                		if(data.status){
-                			location.href='task.php';
-                		}else{
-                			
-                		}
-                	}
-                });
-                return false;
-                });
-                });
-                })</script>
+<script>
+ $(function  () {
+	layui.use('form', function(){
+	  var form = layui.form;
+	  // layer.msg('玩命卖萌中', function(){
+	  //   //关闭后的操作
+	  //   });
+	  //监听提交
+	  form.on('submit(login)', function(data){
+	    // alert(888)
+	    $.ajax({
+	    	type: "post",
+	    	url: host+"login_student.php",
+	    	async: true,
+	    	data: data.field,
+	    	success: function(res) {
+	    		var data=JSON.parse(res);
+	    		if(data.status){
+	    			location.href='task.php';
+	    		}else{
+	    			
+	    		}
+	    	}
+	    });
+	    return false;
+	    });
+	    });
+	    })
+</script>
 
     
     <!-- 底部结束 -->
-    <script>
-    //百度统计可去掉
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-      var s = document.getElementsByTagName("script")[0]; 
-      s.parentNode.insertBefore(hm, s);
-    })();
-    </script>
 </body>
 </html>

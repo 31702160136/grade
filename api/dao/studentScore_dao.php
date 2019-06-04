@@ -22,7 +22,7 @@ class StudentScoreDao {
 		$sql="select ss.*,s.`name` as from_student 
 				from student_score ss,student s 
 					where ss.from_student_id=s.id 
-						and $from_student_id
+						and $from_student_id 
 						and $student_group_id 
 						$lim";
 		$result = $this -> sql -> query($sql);

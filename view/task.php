@@ -27,8 +27,6 @@
         <a>
           <cite>任务列表</cite></a>
       </span>
-      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
-        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
       <div class="layui-row">
@@ -167,7 +165,7 @@ function getList(item){
 	if(status=="教师"){
 		operate='<td>'+
 		        		'<button class="layui-btn"  onclick="archive('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>存档</button>'+
-		        		'<button class="layui-btn"  onclick="editTask('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>修改任务</button>'+
+		        		'<button class="layui-btn"  onclick="editTask('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>设置任务</button>'+
 		        	'</td>';
 		sylloge='<td>'+
 		        		'<button class="layui-btn"  onclick="sylloge('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>任务汇总</button>'+
@@ -180,7 +178,7 @@ function getList(item){
 		        	'<td>'+item.curriculum+'</td>'+
 		        	'<td>'+item.class+'</td>'+
 		        	'<td>'+item.semester+'</td>'+
-		        	'<td>'+item.creation_time+'</td>'+
+		        	'<td>'+getMyDate(item.creation_time)+'</td>'+
 		        	'<td>'+item.name+'</td>'+
 		        	'<td class="td-manage">'+
 		          '<a href="task_info_group.php?task_id='+item.id+'">'+
@@ -264,7 +262,7 @@ function editTask(item){
 						"&weight_teacher="+encodeURI(item.weight_teacher)+
 						"&weight_group="+encodeURI(item.weight_group)+
 						"&weight_group_in="+encodeURI(item.weight_group_in);
-		x_admin_show("修改任务信息","task_edit.php?"+str,600,400);
+		x_admin_show("修改任务信息","task_edit.php?"+str,600,480);
 	}
 	
 }
@@ -325,26 +323,31 @@ function del(item) {
 }
 function delAll(argument) {
 	var ids = tableCheck.getData();
-	layer.confirm('确认要删除吗？', function(index) {
-		$.ajax({
-			type:"post",
-			url:host+"del_task.php",
-			async:true,
-			data:{
-				ids:ids
-			},
-			success:function(res){
-				console.log(res);
-				var data=JSON.parse(res);
-				if(data.status){
-					layer.msg(data.message, {icon: 1});
-					x_admin_father_reload();
-				}else{
-					layer.msg(data.message, {icon: 2});
+	if(!(ids.length>0)){
+		layer.msg("请勾选任务", {icon: 2});
+	}else{
+		layer.confirm('确认要删除吗？', function(index) {
+			$.ajax({
+				type:"post",
+				url:host+"del_task.php",
+				async:true,
+				data:{
+					ids:ids
+				},
+				success:function(res){
+					console.log(res);
+					var data=JSON.parse(res);
+					if(data.status){
+						layer.msg(data.message, {icon: 1});
+						x_admin_father_reload();
+					}else{
+						layer.msg(data.message, {icon: 2});
+					}
 				}
-			}
-		});
-  });
+			});
+	  });
+	}
+	
 }
 
 </script>

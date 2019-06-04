@@ -23,13 +23,9 @@
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a href="">首页</a>
-        <a href="">演示</a>
         <a>
-          <cite>导航元素</cite></a>
+          <cite>学生管理</cite></a>
       </span>
-      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
-        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
       <div class="layui-row">
@@ -100,7 +96,7 @@ function queryTask(data){
 		data:data,
 		success:function(res){
 			var data=JSON.parse(res);
-			is_login(a.data.role);
+			is_login(data.data.role);
 			console.log(data);
 			if(data.status){
 				$("#pages").text(data.data.pages);
@@ -208,26 +204,30 @@ function reList(){
 }
 function delAll(argument) {
 	var ids = tableCheck.getData();
-	layer.confirm('确认要删除吗？', function(index) {
-		$.ajax({
-			type:"post",
-			url:host+"del_student.php",
-			async:true,
-			data:{
-				ids:ids
-			},
-			success:function(res){
-				console.log(res);
-				var data=JSON.parse(res);
-				if(data.status){
-					layer.msg(data.message, {icon: 1});
-					x_admin_father_reload();
-				}else{
-					layer.msg(data.message, {icon: 2});
+	if(!(ids.length>0)){
+		layer.msg("请勾选学生", {icon: 2});
+	}else{
+		layer.confirm('确认要删除吗？', function(index) {
+			$.ajax({
+				type:"post",
+				url:host+"del_student.php",
+				async:true,
+				data:{
+					ids:ids
+				},
+				success:function(res){
+					console.log(res);
+					var data=JSON.parse(res);
+					if(data.status){
+						layer.msg(data.message, {icon: 1});
+						x_admin_father_reload();
+					}else{
+						layer.msg(data.message, {icon: 2});
+					}
 				}
-			}
-		});
-  });
+			});
+  	});
+	}
 }
 </script>
   </body>

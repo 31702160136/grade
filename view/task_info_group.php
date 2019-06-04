@@ -27,8 +27,6 @@
         <a>
           <cite>小组列表</cite></a>
       </span>
-      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
-        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
       <div class="layui-row">
@@ -295,36 +293,27 @@ function member_del(obj, id) {
 function delAll(argument) {
 
 	var data = tableCheck.getData();
-	
-	layer.confirm('确认要删除吗？' + data, function(index) {
-		$.ajax({
-		type:"post",
-		url:host+"del_group.php",
-  	data:{
-  		ids:data
-  	},
-  	success:function(res){
-        	var data=JSON.parse(res);
-        	layer.msg('删除成功', {icon: 1});
-          // 可以窗口进行刷新 
-          location.replace(location.href);
-   }
-  });
-//		//捉到所有被选中的，发异步进行删除
-//		layer.msg('删除成功', {
-//			icon: 1
-//		});
-//		$(".layui-form-checked").not('.header').parents('tr').remove();
-	});
+	if(!(data.length>0)){
+		layer.msg("请勾选小组", {icon: 2});
+	}else{
+		layer.confirm('确认要删除吗？', function(index) {
+			$.ajax({
+				type:"post",
+				url:host+"del_group.php",
+		  	data:{
+		  		ids:data
+		  	},
+		  	success:function(res){
+		        	var data=JSON.parse(res);
+		        	layer.msg('删除成功', {icon: 1});
+		          // 可以窗口进行刷新 
+		          location.replace(location.href);
+		   }
+		  });
+		});
+	}
 }
 </script>
-		<script>var _hmt = _hmt || [];
-(function() {
-	var hm = document.createElement("script");
-	hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-	var s = document.getElementsByTagName("script")[0];
-	s.parentNode.insertBefore(hm, s);
-})();</script>
   </body>
 
 </html>

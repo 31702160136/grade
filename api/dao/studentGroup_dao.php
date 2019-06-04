@@ -40,8 +40,10 @@ class StudentGroupDao {
 			$task_id="g.task_id='".$data["task_id"]."' ";
 		}
 		$sql = "select sg.*,s.`name`,s.username 
-					from student_group sg,student s,`group` g 
+					from student_group sg,student s,`group` g,`task` t 
 						where $group_id 
+						and t.id=g.task_id 
+						and t.is_archive='0' 
 						and $id 
 						and sg.group_id=g.id 
 						and sg.student_id=s.id 

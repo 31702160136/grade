@@ -93,7 +93,7 @@
               <label for="L_repass" class="layui-form-label">
               </label>
               <button  class="layui-btn" lay-filter="add" lay-submit="">
-                  		修改
+                  		设置
               </button>
           </div>
       </form>

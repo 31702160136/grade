@@ -56,8 +56,9 @@ class TaskDao {
 					sg.group_id as id,
 					s.id as student_id,
 					avg(g.teacher_by_score) as teacher_score,
-					s.`name` 
-					from student_score ss,
+					s.`name`,
+					g.`name` as group_name 
+					from 
 					student_group sg,
 					`group` g,
 					student s 

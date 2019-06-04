@@ -3,7 +3,7 @@ include_once "./../handler/handler.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
 include_once "./../utils/tools.php";
-if (true) {
+if (sessionIsLogin()) {
 	$selectService = new SelectService();
 	$data_score=array(
 		"task_id"=>@$_GET["task_id"]

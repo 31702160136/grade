@@ -13,8 +13,12 @@ function sessionLogin($data) {
 	$_SESSION['username'] = $data["username"];
 	$_SESSION['role'] = $data["role"];
 	$_SESSION['id'] = $data["id"];
+	$_SESSION['name'] = $data["name"];
 }
-
+function getSessionMyName() {
+	@session_start();
+	return @$_SESSION['name'];
+}
 function getSessionUserInfo() {
 	@session_start();
 	$data=array();

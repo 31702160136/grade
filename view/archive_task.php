@@ -227,26 +227,30 @@ function del(item) {
 }
 function delAll(argument) {
 	var ids = tableCheck.getData();
-	layer.confirm('确认要删除吗？', function(index) {
-		$.ajax({
-			type:"post",
-			url:host+"del_task.php",
-			async:true,
-			data:{
-				ids:ids
-			},
-			success:function(res){
-				console.log(res);
-				var data=JSON.parse(res);
-				if(data.status){
-					layer.msg(data.message, {icon: 1});
-					x_admin_father_reload();
-				}else{
-					layer.msg(data.message, {icon: 2});
+	if(!(ids.length>0)){
+		layer.msg("请勾选任务", {icon: 2});
+	}else{
+		layer.confirm('确认要删除吗？', function(index) {
+			$.ajax({
+				type:"post",
+				url:host+"del_task.php",
+				async:true,
+				data:{
+					ids:ids
+				},
+				success:function(res){
+					console.log(res);
+					var data=JSON.parse(res);
+					if(data.status){
+						layer.msg(data.message, {icon: 1});
+						x_admin_father_reload();
+					}else{
+						layer.msg(data.message, {icon: 2});
+					}
 				}
-			}
-		});
-  });
+			});
+	  });
+	}
 }
 
 </script>

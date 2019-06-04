@@ -28,8 +28,6 @@
         <a>
           <cite id="g_title">成员列表</cite></a>
       </span>
-      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
-        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
       <div class="layui-row">
@@ -59,7 +57,7 @@
             <th>学号</th>
             <th>姓名</th>
             <th>分数</th>
-            <th>组内互评</th>
+            <th>组员互评</th>
           </tr>
         </thead>
         <tbody id="table">
@@ -183,6 +181,7 @@ function queryTask(data){
 					var list=getList(item);
 					$("#table").append(list);
 				});
+				reCheckbox();
 			}
 		}
 	});
@@ -372,42 +371,33 @@ function member_del(obj, id) {
 function delAll(argument) {
 
 	var data = tableCheck.getData();
-	
-	layer.confirm('确认要删除吗？' + data, function(index) {
-		$.ajax({
-		type:"post",
-		url:host+"del_member.php",
-  	data:{
-  		group_id:getQueryVariable("group_id"),
-  		ids:data
-  	},
-  	success:function(res){
-  		console.log(res);
-        	var data=JSON.parse(res);
-        	if(data.status){
-        		layer.msg(data.message, {icon: 1});
-	          // 可以对父窗口进行刷新 
-	          location.replace(location.href);
-        	}else{
-        		layer.msg(data.message, {icon: 2});
-        	}
-   }
-  });
-//		//捉到所有被选中的，发异步进行删除
-//		layer.msg('删除成功', {
-//			icon: 1
-//		});
-//		$(".layui-form-checked").not('.header').parents('tr').remove();
-	});
+	if(!(data.length>0)){
+		layer.msg("请勾选成员", {icon: 2});
+	}else{
+		layer.confirm('确认要删除吗？' + data, function(index) {
+			$.ajax({
+				type:"post",
+				url:host+"del_member.php",
+		  	data:{
+		  		group_id:getQueryVariable("group_id"),
+		  		ids:data
+		  	},
+		  	success:function(res){
+		  		console.log(res);
+		        	var data=JSON.parse(res);
+		        	if(data.status){
+		        		layer.msg(data.message, {icon: 1});
+			          // 可以对父窗口进行刷新 
+			          location.replace(location.href);
+		        	}else{
+		        		layer.msg(data.message, {icon: 2});
+		        	}
+		   }
+		  });
+		});
+	}
 }
 </script>
-		<script>var _hmt = _hmt || [];
-(function() {
-	var hm = document.createElement("script");
-	hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-	var s = document.getElementsByTagName("script")[0];
-	s.parentNode.insertBefore(hm, s);
-})();</script>
   </body>
 
 </html>

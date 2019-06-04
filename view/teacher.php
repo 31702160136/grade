@@ -23,13 +23,9 @@
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a href="">首页</a>
-        <a href="">演示</a>
         <a>
-          <cite>导航元素</cite></a>
+          <cite>教师管理</cite></a>
       </span>
-      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
-        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
       <div class="layui-row">
@@ -47,7 +43,6 @@
       <xblock>
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
         <button class="layui-btn" onclick="x_admin_show('添加教师','./teacher_add.php',600,450)"><i class="layui-icon"></i>添加</button>
-        <span class="x-right" id="sumInfo" style="line-height:40px">共有数据：88 条</span>
       </xblock>
       <table class="layui-table x-admin">
         <thead id="title">
@@ -243,31 +238,29 @@ function member_del(obj, id) {
 function delAll(argument) {
 
 	var data = tableCheck.getData();
-	
-	layer.confirm('确认要删除吗？' + data, function(index) {
-		$.ajax({
-		type:"post",
-		url:host+"del_teachers.php",
-  	data:{
-  		ids:data
-  	},
-  	success:function(res){
-        	var data=JSON.parse(res);
-        	if(data.status){
-        		layer.msg(data.message, {icon: 1});
-	          // 可以对父窗口进行刷新 
-	          x_admin_father_reload();
-        	}else{
-        		layer.msg(data.message, {icon: 1});
-        	}
-   }
-  });
-//		//捉到所有被选中的，发异步进行删除
-//		layer.msg('删除成功', {
-//			icon: 1
-//		});
-//		$(".layui-form-checked").not('.header').parents('tr').remove();
-	});
+	if(!(data.length>0)){
+		layer.msg("请勾选教师", {icon: 2});
+	}else{
+		layer.confirm('确认要删除吗？', function(index) {
+			$.ajax({
+				type:"post",
+				url:host+"del_teachers.php",
+				data:{
+					ids:data
+				},
+				success:function(res){
+			    	var data=JSON.parse(res);
+			    	if(data.status){
+			    		layer.msg(data.message, {icon: 1});
+			          // 可以对父窗口进行刷新 
+		          		x_admin_father_reload();
+		        	}else{
+		        		layer.msg(data.message, {icon: 1});
+		        	}
+			   }
+		  });
+		});
+	}
 }
 </script>
 		<script>var _hmt = _hmt || [];

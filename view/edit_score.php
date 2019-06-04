@@ -72,29 +72,34 @@ function sendScore(){
 			urls="cre_group_score.php";
 			break;
 	}
-	$.ajax({
-		type:"post",
-		url:host+urls,
-		async:true,
-		data:data,
-		success:function(res){
-			console.log(res);
-			var data=JSON.parse(res);
-			console.log(data);
-			if(data.status){
-				layer.alert(data.message, {icon: 6},function () {
-	    		//关闭当前frame
-	    		x_admin_close();
-	    		// 可以对父窗口进行刷新 
-	    		x_admin_father_reload();
-				});
-			}else{
-				layer.msg(data.message, {icon: 5},function () {
-	    		
-				});
+	if(parseInt($("#score").val())>100||parseInt($("#score").val())<0){
+		layer.msg("成绩不能大于100与小于0", {icon: 5});
+	}else{
+		$.ajax({
+			type:"post",
+			url:host+urls,
+			async:true,
+			data:data,
+			success:function(res){
+				console.log(res);
+				var data=JSON.parse(res);
+				console.log(data);
+				if(data.status){
+					layer.alert(data.message, {icon: 6},function () {
+		    		//关闭当前frame
+		    		x_admin_close();
+		    		// 可以对父窗口进行刷新 
+		    		x_admin_father_reload();
+					});
+				}else{
+					layer.msg(data.message, {icon: 5},function () {
+		    		
+					});
+				}
 			}
-		}
-	});
+		});
+	}
+	
 }
     </script>
   </body>

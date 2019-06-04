@@ -14,12 +14,11 @@
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="js/host.js"></script>
-
 </head>
 <body class="login-bg">
     
     <div class="login layui-anim layui-anim-up">
-        <div class="message">x-admin2.0-管理登录</div>
+        <div class="message">管理员登陆</div>
         <div id="darkbannerwrap"></div>
         
         <form method="post" class="layui-form" >

@@ -88,7 +88,7 @@
               <label for="L_repass" class="layui-form-label">
               </label>
               <button  class="layui-btn" lay-filter="add" lay-submit="">
-                  增加
+                  	注册
               </button>
           </div>
       </form>
@@ -111,33 +111,36 @@
                 if($('#L_pass').val()!=$('#L_repass').val()){
                     return '两次密码不一致';
                 }
-            }
+            },
           });
 		//监听提交
           form.on('submit(add)', function(data){
-            console.log(data);
-           	$.ajax({
-           		type:"post",
-           		url:host+"cre_student.php",
-           		async:true,
-           		data:data.field,
-           		success:function(res){
-           			var data=JSON.parse(res);
-           			if(data.status){
-           				layer.alert(data.message, {icon: 6},function () {
-                		//关闭当前frame
-                		x_admin_close();
-                		// 可以对父窗口进行刷新 
-                		x_admin_father_reload();
-            			});
-           			}else{
-           				layer.msg(data.message, {icon: 5},function () {
-                		
-            			});
-           			}
-           		}
-           	});
-            return false;
+          	
+            if(data.field.username.trim()==""||data.field.name.trim()==""||data.field.department.trim()==""||data.field.class.trim()==""){
+            	layer.msg("信息不完整", {icon: 5});
+            }else{
+            	$.ajax({
+			       		type:"post",
+			       		url:host+"cre_student.php",
+			       		async:true,
+			       		data:data.field,
+			       		success:function(res){
+			       			var data=JSON.parse(res);
+			       			if(data.status){
+			       				layer.alert(data.message, {icon: 6},function () {
+			            		//关闭当前frame
+			            		x_admin_close();
+			            		// 可以对父窗口进行刷新 
+			            		x_admin_father_reload();
+			        			});
+			       			}else{
+			       				layer.msg(data.message, {icon: 5},function () {
+			            		
+			        			});
+			       			}
+			       		}
+			       	});
+            }
           });
           
           

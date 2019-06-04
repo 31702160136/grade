@@ -75,6 +75,11 @@ class SelectService {
 			$data["page"]*=$data["size"];
 		}
 		$result=$this->group->findGroups($data);
+		for($i=0;$i<count($result);$i++){
+			if($result[$i]["teacher_by_score"]==-1){
+				$result[$i]["teacher_by_score"]="未评分";
+			}
+		}
 		return $result;
 	}
 	//查询成员

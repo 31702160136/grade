@@ -29,8 +29,9 @@
         <thead id="title">
           <tr>
             <th>姓名</th>
+            <th>小组</th>
             <th>教师评分</th>
-            <th>小组评分</th>
+            <th>小组互评</th>
             <th>组员互评</th>
             <th>总成绩</th>
           </tr>
@@ -65,6 +66,7 @@ function getList(item){
 	var list='<tbody>'+
 	'<tr>'+
     	'<td>'+item.name+'</td>'+
+    	'<td>'+item.group_name+'</td>'+
     	'<td>'+item.teacher_score+'</td>'+
     	'<td>'+item.group_score+'</td>'+
     	'<td>'+item.student_score+'</td>'+

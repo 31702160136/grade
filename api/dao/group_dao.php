@@ -31,8 +31,10 @@ class GroupDao {
 		if(isset($data["group_id"])&& !empty(trim($data["group_id"]))){
 			$group_id="g.`id` = '".$data["group_id"]."' ";
 		}
-		$sql = "select g.*,s.`name` as student from `group` g,`student` s 
+		$sql = "select g.*,s.`name` as student from `group` g,`student` s,`task` t 
 					where g.student_id=s.id 
+					and t.id=g.task_id  
+					and t.is_archive='0' 
 					and $task_id 
 					and $group_id 
 					and $name  
