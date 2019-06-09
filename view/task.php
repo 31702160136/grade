@@ -24,14 +24,14 @@
   <body>
     <div class="x-nav">
       <span class="layui-breadcrumb">
-        <a>
-          <cite>任务列表</cite></a>
+        <a><cite>任务列表</cite></a>
+        <span class="x-right" style="line-height:40px;margin-top: 5px;"><button class="layui-btn" onclick="outLogin()">退出登陆</button></span>
       </span>
     </div>
     <div class="x-body">
       <div class="layui-row">
         <div class="layui-form layui-col-md12 x-so">
-        	<input type="text" id="sreach" placeholder="请输入查询信息" autocomplete="off" class="layui-input">
+        	<input type="text" id="sreach" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
           	<button class="layui-btn" onclick="sreach()"><i class="layui-icon">&#xe615;</i></button>
         <span class="x-right" id="userInfo" style="line-height:40px"><button class="layui-btn" onclick="edit()">修改信息</button></span>
         </div>
@@ -39,7 +39,7 @@
       <xblock>
         <button id="del" class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
         <button id="cre" class="layui-btn" onclick="x_admin_show('创建任务','./task_add.php',600,550)"><i class="layui-icon"></i>创建</button>
-        <button id="archive" class="layui-btn" onclick="x_admin_show('存档','./archive_task.php',800,700)">存档</button>
+        <button id="archive" class="layui-btn" onclick="x_admin_show('存档','./archive_task.php',850,700)">存档</button>
       </xblock>
       <table class="layui-table x-admin" >
         <thead id="title">
@@ -47,11 +47,13 @@
             <th>
               <div id="allICheckbox" class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
             </th>
+            <th>序号</th>
             <th>课程</th>
             <th>班级</th>
             <th>学期</th>
             <th>任务发布日期</th>
             <th>任课老师</th>
+            <th>加入人数</th>
             <th>查看任务</th>
             <th id="sylloge">汇总</th>
              <th id="operate">操作</th>
@@ -63,18 +65,25 @@
       </table>
       <div class="page">
         <div>
-        	<a style="border: none;">共有<span id="pages" style="border: none;">1</span>页</a>
         	<a style="border: none;">当前<span id="at" style="border: none;">1</span>页</a>
           	<a class="prev"  onclick="back()" style="cursor:pointer">上一页</a>
           	<a class="next"  onclick="next()" style="cursor:pointer">下一页</a>
+        	<a style="border: none;">共有<span id="pages" style="border: none;">1</span>页</a>
 	      	<a style="border: none;">
 	      		<select id="go" style="height: 30px;">
 	      		</select>
+	      	</a>
+	      	<a style="border: none;">
+	      		<input id="edit_page" style="width: 50px;" type="number" maxlength="3" class="layui-input x-sort" onchange="member_sort()"  value='10'>
 	      	</a>
         </div>
       </div>
     </div>
 <script>
+//序号
+var numberArr=[1];
+var numbers=1;
+
 var pg_ini={
 	page:1,
 	size:10,
@@ -90,13 +99,13 @@ $("#archive").hide();
 $("#userInfo").hide();
 init();
 function init(){
+	is_login("student");
 	$.ajax({
 		type:"get",
 		url:host+"user_type.php",
 		async:true,
 		success:function(res){
 			var data=JSON.parse(res);
-			is_login(data.data.role);
 			console.log(data);
 			if(data.status){
 				switch(data.data.role){
@@ -149,16 +158,22 @@ function queryTask(data){
 						$("#go").append('<option value="'+(i+1)+'">'+(i+1)+'</option>');
 					}
 				}
+				numberArr=[1];
+				for(var i=0;i<parseInt(data.data.pages);i++){
+					numberArr.push(i*pg_ini.size+1);
+					console.log(i*pg_ini.size);
+				}
+				numbers=numberArr[at];
 				//信息列表
 				$.each(data.data.data, function(index,item) {
-					var list=getList(item);
+					var list=getList(item,numbers++);
 					$("#table").append(list);
 				});
 			}
 		}
 	});
 }
-function getList(item){
+function getList(item,index){
 	var doEditItem=JSON.stringify(item);
 	var operate="";
 	var sylloge="";
@@ -175,11 +190,13 @@ function getList(item){
 		        	'<td>'+
 		          		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
 		        	'</td>'+
+		        	'<td>'+index+'</td>'+
 		        	'<td>'+item.curriculum+'</td>'+
 		        	'<td>'+item.class+'</td>'+
 		        	'<td>'+item.semester+'</td>'+
 		        	'<td>'+getMyDate(item.creation_time)+'</td>'+
 		        	'<td>'+item.name+'</td>'+
+		        	'<td>'+item.count+'</td>'+
 		        	'<td class="td-manage">'+
 		          '<a href="task_info_group.php?task_id='+item.id+'">'+
 		          		'<button class="layui-btn"><i class="layui-icon"></i>查看任务</button>'+
@@ -204,6 +221,8 @@ function back(){
 		}
 		queryTask(data);
 		$("#at").text(page);
+		var page=parseInt($("#at").prop("innerText"));
+		numbers=numberArr[page-1];
 	}
 }
 //编辑窗口
@@ -236,7 +255,15 @@ window.onload = function () {
 		queryTask(data);
     },false);
 }
+function member_sort(){
+	numbers=1;
+	numberArr=[1];
+	pg_ini.size=parseInt($("#edit_page").val());
+	//初始化数据
+	queryTask(pg_ini);
+}
 function sreach(){
+	numbers=1;
 	var data={
 		page:1,
 		size:pg_ini.size,
@@ -248,7 +275,7 @@ function sreach(){
 //编辑窗口
 function edit(){
 	if(status=="学生"){
-		var str="id="+encodeURI(infos.id)+"&username="+encodeURI(infos.username)+"&name="+encodeURI(infos.name)+"&department="+encodeURI(infos.department)+"&class="+encodeURI(infos.class)+"&password="+encodeURI(infos.password);
+		var str="id="+encodeURI(infos.id)+"&username="+encodeURI(infos.username)+"&name="+encodeURI(infos.name)+"&department="+encodeURI(infos.department)+"&class="+encodeURI(infos.class)+"&password="+encodeURI(infos.password)+"&ruter=student_by";
 		x_admin_show("修改学生信息","student_edit_info.php?"+str,600,400);
 	}
 }
@@ -264,11 +291,10 @@ function editTask(item){
 						"&weight_group_in="+encodeURI(item.weight_group_in);
 		x_admin_show("修改任务信息","task_edit.php?"+str,600,480);
 	}
-	
 }
 function sylloge(item){
-	var str="task_id="+item.id;
-	x_admin_show("编辑","sylloge.php?"+str,600,800);
+	var str="task_id="+item.id+"&task_name="+item.curriculum;
+	x_admin_show("汇总","sylloge.php?"+str,600,800);
 }
 function archive(item){
 	layer.confirm('确定要存档吗？', function(index) {
@@ -297,6 +323,14 @@ function reList(){
 		var form = layui.form;
 		form.render();
 	});
+}
+function outLogin(){
+	out_login();
+	if(status=="学生"){
+		window.location.href="login.php";
+	}else if(status=="教师"){
+		window.location.href="login_teacher.php";
+	}
 }
 function del(item) {
 	var ids=[item.id];

@@ -10,10 +10,11 @@ function sessionIsLogin() {
 
 function sessionLogin($data) {
 	@session_start();
-	$_SESSION['username'] = $data["username"];
-	$_SESSION['role'] = $data["role"];
-	$_SESSION['id'] = $data["id"];
-	$_SESSION['name'] = $data["name"];
+	$_SESSION['username'] = @$data["username"];
+	$_SESSION['role'] = @$data["role"];
+	$_SESSION['id'] = @$data["id"];
+	$_SESSION['name'] = @$data["name"];
+	$_SESSION['class'] = @$data["class"];
 }
 function getSessionMyName() {
 	@session_start();
@@ -30,17 +31,20 @@ function getSessionUserInfo() {
 
 function getSessionUserName() {
 	@session_start();
-	return $_SESSION['username'];
+	return @$_SESSION['username'];
 }
-
+function getSessionClass() {
+	@session_start();
+	return isset($_SESSION['class'])?$_SESSION['class']:null;
+}
 function getSessionRole() {
 	@session_start();
-	return $_SESSION['role'];
+	return @$_SESSION['role'];
 }
 
 function getSessionId() {
 	@session_start();
-	return $_SESSION['id'];
+	return @$_SESSION['id'];
 }
 
 function sessionOutLogin() {

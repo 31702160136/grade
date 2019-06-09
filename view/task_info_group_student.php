@@ -47,6 +47,7 @@
         <button id="del" class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
         <button id="dissolveGroup" class="layui-btn" onclick="dissolve_group()"><i class="layui-icon"></i>解散小组</button>
         <button id="add" class="layui-btn" onclick="add()"><i class="layui-icon"></i>添加成员</button>
+          <span class="x-right" id="captain" style="line-height:40px;margin-top: -5px;margin-right: 20px;"><a>队长：xxx</a></span>
       </xblock>
       <table class="layui-table x-admin" >
         <thead id="title">
@@ -54,6 +55,7 @@
             <th>
               <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
             </th>
+            <th>序号</th>
             <th>学号</th>
             <th>姓名</th>
             <th>分数</th>
@@ -66,18 +68,25 @@
       </table>
       <div class="page">
         <div>
-        	<a style="border: none;">共有<span id="pages" style="border: none;">1</span>页</a>
         	<a style="border: none;">当前<span id="at" style="border: none;">1</span>页</a>
           	<a class="prev"  onclick="back()" style="cursor:pointer">上一页</a>
           	<a class="next"  onclick="next()" style="cursor:pointer">下一页</a>
+        	<a style="border: none;">共有<span id="pages" style="border: none;">1</span>页</a>
 	      	<a style="border: none;">
 	      		<select id="go" style="height: 30px;">
 	      		</select>
+	      	</a>
+	      	<a style="border: none;">
+	      		<input id="edit_page" style="width: 50px;" type="number" maxlength="3" class="layui-input x-sort" onchange="member_sort()"  value='10'>
 	      	</a>
         </div>
       </div>
     </div>
 <script>
+//序号
+var numberArr=[1];
+var numbers=1;
+
 var pg_ini={
 	page:1,
 	size:10,
@@ -95,6 +104,7 @@ $("#del").hide();
 $("#add").hide();
 $("#breakGroup").hide();
 function init(){
+	is_login("student");
 	$.ajax({
 		type:"get",
 		url:host+"user_type.php",
@@ -176,17 +186,23 @@ function queryTask(data){
 						$("#go").append('<option value="'+(i+1)+'">'+(i+1)+'</option>');
 					}
 				}
+				$("#captain").text("队长："+data.data.data.captain);
+				numberArr=[1];
+				for(var i=0;i<parseInt(data.data.pages);i++){
+					numberArr.push(i*pg_ini.size+1);
+					console.log(i*pg_ini.size);
+				}
+				numbers=numberArr[at];
 				//信息列表
-				$.each(data.data.data, function(index,item) {
-					var list=getList(item);
+				$.each(data.data.data.data, function(index,item) {
+					var list=getList(item,numbers++);
 					$("#table").append(list);
 				});
-				reCheckbox();
 			}
 		}
 	});
 }
-function getList(item){
+function getList(item,index){
 	var doEditItem=JSON.stringify(item);
 	var score="";
 	if(item.score!="自己"){
@@ -198,6 +214,7 @@ function getList(item){
             	'<td>'+
               		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
             	'</td>'+
+            	'<td>'+index+'</td>'+
             	'<td>'+item.username+'</td>'+
             	'<td>'+item.name+'</td>'+
             	'<td>'+item.score+
@@ -228,6 +245,8 @@ function back(){
 		}
 		queryTask(data);
 		$("#at").text(page);
+		var page=parseInt($("#at").prop("innerText"));
+		numbers=numberArr[page-1];
 	}
 }
 //编辑窗口
@@ -261,6 +280,7 @@ window.onload = function () {
     },false);
 }
 function sreach(){
+	numbers=1;
 	var data={
 		page:1,
 		size:pg_ini.size,
@@ -275,6 +295,13 @@ function add(){
 	var str="group_id="+encodeURI(getQueryVariable("group_id"))+"&task_id="+encodeURI(getQueryVariable("task_id"));
 	console.log(str);
 	x_admin_show("编辑","task_group_add_member.php?"+str,600,500);
+}
+function member_sort(){
+	numbers=1;
+	numberArr=[1];
+	pg_ini.size=parseInt($("#edit_page").val());
+	//初始化数据
+	queryTask(pg_ini);
 }
 function dissolve_group(){
 	$.ajax({

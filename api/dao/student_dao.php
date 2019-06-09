@@ -32,7 +32,8 @@ class StudentDao {
 				and $id 
 				and $username 
 				and $username_s 
-				$lim";
+				ORDER BY username 
+				$lim ";
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}

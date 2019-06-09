@@ -2,7 +2,9 @@
 include_once "./../handler/handler.php";
 include_once "./../service/selectService.php";
 include_once "./../utils/session_status.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("get_user_info");
 	$selectService = new SelectService();
 	$data=array(
 		"username"=>getSessionUserName()

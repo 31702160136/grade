@@ -3,7 +3,9 @@ include_once "./../handler/handler.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
 include_once "./../utils/tools.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("sel_students");
 	$selectService = new SelectService();
 	$data=array(
 		"name"=>isset($_GET["name"])?$_GET["name"]:null,

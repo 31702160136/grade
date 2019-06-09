@@ -2,7 +2,9 @@
 include_once "./../handler/handler.php";
 include_once "./../service/create.php";
 include_once "./../utils/session_status.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("cre_task");
 	$createService = new CreateService();
 	$data = array(
 		"curriculum" => @$_POST["curriculum"],

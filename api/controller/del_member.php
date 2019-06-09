@@ -3,7 +3,9 @@ include_once "./../handler/handler.php";
 include_once "./../service/delete.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
+include_once "./../boss/boss.php";
 if(sessionIsLogin()){
+	boss("del_member");
 	$deleteService=new DeleteService();
 	$selectService = new SelectService();
 	$data = array(

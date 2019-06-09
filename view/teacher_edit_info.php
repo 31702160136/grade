@@ -50,7 +50,7 @@
                   <span class="x-red"></span>密码
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="password" name="password" required="" lay-verify="password"
+                  <input type="password" id="password" name="password" required="" lay-verify="password"
                   autocomplete="off" class="layui-input">
               </div>
           </div>

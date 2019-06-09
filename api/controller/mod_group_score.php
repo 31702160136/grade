@@ -2,7 +2,9 @@
 include_once "./../handler/handler.php";
 include_once "./../service/modify.php";
 include_once "./../utils/session_status.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("mod_group_score");
 	$modifyService = new ModifyService();
 	$data = array(
 		"id"=>@$_POST["id"],

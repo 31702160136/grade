@@ -38,12 +38,13 @@
             <th>
               <div id="allICheckbox" class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
             </th>
+            <th>序号</th>
             <th>课程</th>
             <th>班级</th>
             <th>学期</th>
             <th>任务发布日期</th>
             <th>任课老师</th>
-            <th>查看任务</th>
+            <th>加入人数</th>
             <th id="sylloge">汇总</th>
              <th id="operate">操作</th>
             </tr>
@@ -54,6 +55,7 @@
       </table>
     </div>
 <script>
+
 var pg_ini={
 	page:1,
 	size:999999999,
@@ -121,16 +123,18 @@ function queryTask(data){
 						$("#go").append('<option value="'+(i+1)+'">'+(i+1)+'</option>');
 					}
 				}
+				//序号
+				var numbers=1;
 				//信息列表
 				$.each(data.data.data, function(index,item) {
-					var list=getList(item);
+					var list=getList(item,numbers++);
 					$("#table").append(list);
 				});
 			}
 		}
 	});
 }
-function getList(item){
+function getList(item,index){
 	var doEditItem=JSON.stringify(item);
 	var operate="";
 	var sylloge="";
@@ -146,16 +150,13 @@ function getList(item){
 		        	'<td>'+
 		          		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
 		        	'</td>'+
+		        	'<td>'+index+'</td>'+
 		        	'<td>'+item.curriculum+'</td>'+
 		        	'<td>'+item.class+'</td>'+
 		        	'<td>'+item.semester+'</td>'+
 		        	'<td>'+item.creation_time+'</td>'+
 		        	'<td>'+item.name+'</td>'+
-		        	'<td class="td-manage">'+
-		          '<a href="task_info_group.php?task_id='+item.id+'">'+
-		          		'<button class="layui-btn"><i class="layui-icon"></i>查看任务</button>'+
-		        	'</a>'+
-		        	'</td>'+
+		        	'<td>'+item.count+'</td>'+
 		        	sylloge+
 		        		operate+
 		  		'</tr>';
@@ -171,7 +172,7 @@ function sreach(){
 	queryTask(data);
 }
 function sylloge(item){
-	var str="task_id="+item.id;
+	var str="task_id="+item.id+"&task_name="+item.curriculum;
 	x_admin_show("汇总","sylloge.php?"+str,600,600);
 }
 function archive(item){

@@ -3,7 +3,9 @@ include_once "./../handler/handler.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
 include_once "./../utils/tools.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("sel_task_score_sylloge");
 	$selectService = new SelectService();
 	$data_score=array(
 		"task_id"=>@$_GET["task_id"]

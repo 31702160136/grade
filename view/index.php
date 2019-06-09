@@ -16,11 +16,6 @@
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
     <script type="text/javascript" src="./js/is_login.js"></script>
-    <script>
-    	is_login("admin");
-        // 是否开启刷新记忆tab功能
-        // var is_remember = false;
-    </script>
 </head>
 <body>
     <!-- 顶部开始 -->
@@ -33,7 +28,7 @@
           <li class="layui-nav-item">
             <a href="javascript:;">admin</a>
             <dl class="layui-nav-child"> <!-- 二级菜单 -->
-              <dd><a href="javascript:out_login();">退出</a></dd>
+              <dd><a href="javascript:outLogin();">退出</a></dd>
             </dl>
           </li>
         </ul>
@@ -92,22 +87,29 @@
     </div>
     <!-- 底部结束 -->
     <script>
-	function out_login(){
+    init();
+    function init(){
+		is_login("admin");
 		$.ajax({
 			type:"get",
-			url: host + "out_login.php",
+			url:host+"user_type.php",
 			async:true,
-			success: function(data){
-				var res=JSON.parse(data);
-				if (res.status) {
-					window.location.href = "login.php";
-					return;
+			success:function(res){
+				console.log(res);
+				var data=JSON.parse(res);
+				console.log(data);
+				if(data.status&&data.data.role=="admin"){
+					
+				}else{
+					out_login();
+					is_login("admin");
 				}
-			},
-		    error : function () {
-		      	document.write("error");
-		    }
+			}
 		});
+	}
+	function outLogin(){
+		out_login();
+		x_admin_father_reload();
 	}
     </script>
 </body>

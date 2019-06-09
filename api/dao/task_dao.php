@@ -10,6 +10,7 @@ class TaskDao {
 	public function findTasks($data) {
 		$lim="";
 		$is_archive="t1.`teacher_id`=t2.`id`";
+		$class="t1.`teacher_id`=t2.`id`";
 		$task_id="t1.`teacher_id`=t2.`id`";
 		$teacherId="t1.`teacher_id`=t2.`id`";
 		$curriculum="t1.`teacher_id`=t2.`id`";
@@ -29,17 +30,34 @@ class TaskDao {
 		if(isset($data["is_archive"])){
 			$is_archive="t1.`is_archive` = '".trim($data["is_archive"])."' ";
 		}
+		//处理课程名搜索条件
+		if(isset($data["class"])){
+			$class="t1.`class` = '".trim($data["class"])."' ";
+		}
 		//处理页数
 		if(isset($data["page"])&&isset($data["size"])){
 			$lim="limit ".$data["page"].",".$data["size"];
 		}
 		$sql = "select t1.*,t2.`name` as name from `task` t1,`teacher` t2 where 
 						t1.`teacher_id`=t2.`id` 
+						and $class 
 						and $is_archive 
 						and $task_id 
 						and $teacherId 
 						and $curriculum 
 						$lim";
+		$result = $this -> sql -> query($sql);
+		return $result;
+	}
+	public function findTaskMemberCount($data) {
+		$task_id="t.`id` = '".trim($data["id"])."' ";
+		$sql = "select count(sg.id) as count
+				from `student_group` sg,
+				`group` g,
+				`task` t 
+				where g.task_id=t.id 
+				and g.id=sg.group_id 
+				and $task_id ";
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}

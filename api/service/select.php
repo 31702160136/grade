@@ -66,6 +66,17 @@ class SelectService {
 			$data["page"]*=$data["size"];
 		}
 		$result=$this->task->findTasks($data);
+		for($i=0;$i<count($result);$i++){
+			$data2=array(
+				"id"=>$result[$i]["id"]
+			);
+			$res_count=$this->task->findTaskMemberCount($data2);
+			if(count($res_count)>0){
+				$result[$i]["count"]=$res_count[0]["count"];
+			}else{
+				$result[$i]["count"]=0;
+			}
+		}
 		return $result;
 	}
 	//查询小组

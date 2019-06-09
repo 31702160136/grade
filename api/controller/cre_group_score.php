@@ -4,7 +4,9 @@ include_once "./../service/create.php";
 include_once "./../service/modify.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("cre_group_score");
 	$createService = new CreateService();
 	$selectService = new SelectService();
 	$modifyService = new ModifyService();

@@ -3,18 +3,24 @@ include_once "./../handler/handler.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
 include_once "./../utils/tools.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("sel_member");
 	$selectService = new SelectService();
 	$data=array(
 		"name_s"=>isset($_GET["name_s"])?$_GET["name_s"]:null,
 		"username_s"=>isset($_GET["username_s"])?$_GET["username_s"]:null,
-		"task_id"=>$_GET["task_id"],
-		"group_id"=>$_GET["group_id"],
+		"task_id"=>@$_GET["task_id"],
+		"group_id"=>@$_GET["group_id"],
 		"page"=>isset($_GET["page"])?$_GET["page"]:0,
 		"size"=>isset($_GET["size"])?$_GET["size"]:10
 	);
 	//查询结果，用于数据
 	$result1=$selectService->getMember($data);
+	$captain_data = array(
+		"group_id"=>@$_GET["group_id"]
+	);
+	$captain = $selectService ->getGroups($captain_data);
 	//与成绩合并
 	for($i=0;$i<count($result1);$i++){
 		$data_score=array(
@@ -39,9 +45,13 @@ if (sessionIsLogin()) {
 	//查询结果，用于转换总页数
 	$result2=$selectService->getMember($data);
 	$pages=getPage($result2,$size);
+	$res_data=array(
+		"data"=>$result1,
+		"captain"=>$captain[0]["student"]
+	);
 	$outData=array(
 		"pages"=>$pages,
-		"data"=>$result1
+		"data"=>$res_data
 	);
 	succeedOfInfo("查询学生成功", $outData);
 } else {

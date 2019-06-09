@@ -3,10 +3,13 @@ include_once "./../handler/handler.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
 include_once "./../utils/tools.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("sel_task");
 	$selectService = new SelectService();
 	$data=array(
 		"curriculum"=>isset($_GET["curriculum"])?$_GET["curriculum"]:null,
+		"class"=>getSessionClass(),
 		"is_archive"=>isset($_GET["is_archive"])?$_GET["is_archive"]:null,
 		"page"=>isset($_GET["page"])?$_GET["page"]:0,
 		"size"=>isset($_GET["size"])?$_GET["size"]:10

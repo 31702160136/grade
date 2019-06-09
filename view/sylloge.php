@@ -30,9 +30,9 @@
           <tr>
             <th>姓名</th>
             <th>小组</th>
-            <th>教师评分</th>
-            <th>小组互评</th>
             <th>组员互评</th>
+            <th>小组互评</th>
+            <th>教师评分</th>
             <th>总成绩</th>
           </tr>
         </thead>
@@ -67,9 +67,9 @@ function getList(item){
 	'<tr>'+
     	'<td>'+item.name+'</td>'+
     	'<td>'+item.group_name+'</td>'+
-    	'<td>'+item.teacher_score+'</td>'+
-    	'<td>'+item.group_score+'</td>'+
     	'<td>'+item.student_score+'</td>'+
+    	'<td>'+item.group_score+'</td>'+
+    	'<td>'+item.teacher_score+'</td>'+
     	'<td>'+item.score+'</td>'+
 	'</tr>'+
 	'</tbody>';
@@ -81,15 +81,15 @@ function tableToExcel(){
 		return;
 	}
       //列标题
-      var str = '<tr> <td>姓名</td> <td>教师评分</td> <td>小组评分</td> <td>组员评分</td> <td>总成绩</td> </tr>';
+      var str = '<tr></tr>'+'<tr> <td style="border: solid #010100 1px;">姓名</td> <td style="border: solid #010100 1px;">小组评分</td> <td style="border: solid #010100 1px;">组员评分</td> <td style="border: solid #010100 1px;">教师评分</td> <td style="border: solid #010100 1px;">总成绩</td> </tr>';
       //循环遍历，每行加入tr标签，每个单元格加td标签
       for(var i = 0 ; i < jsonData.length ; i++ ){
         str+='<tr>';
-        str+="<td> "+jsonData[i].name+"\t"+"</td>";
-        str+="<td> "+jsonData[i].teacher_score+"\t"+"</td>";
-        str+="<td> "+jsonData[i].group_score+"\t"+"</td>";
-        str+="<td> "+jsonData[i].student_score+"\t"+"</td>";
-        str+="<td> "+jsonData[i].score+"\t"+"</td>";
+        str+="<td style='border: solid #010100 1px;'> "+jsonData[i].name+"\t"+"</td>";
+        str+="<td style='border: solid #010100 1px;'> "+jsonData[i].student_score+"\t"+"</td>";
+        str+="<td style='border: solid #010100 1px;'> "+jsonData[i].group_score+"\t"+"</td>";
+        str+="<td style='border: solid #010100 1px;'> "+jsonData[i].teacher_score+"\t"+"</td>";
+        str+="<td style='border: solid #010100 1px;'> "+jsonData[i].score+"\t"+"</td>";
         str+='</tr>';
       }
       //Worksheet名
@@ -101,7 +101,7 @@ function tableToExcel(){
       					'xmlns:x="urn:schemas-microsoft-com:office:excel"'+
       					'xmlns="http://www.w3.org/TR/REC-html40">'+
       					'<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'+
-        				'<x:Name>${worksheet}</x:Name>'+
+        				'<x:Name>'+getQueryVariable("task_name")+'</x:Name>'+
         				'<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>'+
         				'</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->'+
         				'</head><body><table>'+str+'</table></body></html>';
@@ -109,7 +109,7 @@ function tableToExcel(){
       window.location.href = uri + base64(template);
     }
     //输出base64编码
-    function base64 (s) { 
+    function base64 (s) {
     	return window.btoa(unescape(encodeURIComponent(s)));
     }
 

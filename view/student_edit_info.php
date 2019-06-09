@@ -15,6 +15,7 @@
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
     <script type="text/javascript" src="./js/tools.js"></script>
+    <script type="text/javascript" src="./js/is_login.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -68,7 +69,7 @@
                   <span class="x-red"></span>密码
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="password" name="password" required="" lay-verify="password"
+                  <input type="password" id="password" name="password" required="" lay-verify="password"
                   autocomplete="off" class="layui-input">
               </div>
           </div>
@@ -94,15 +95,30 @@
           	async:true,
           	data:data.field,
           	success:function(res){
+          		console.log(res);
           		var data=JSON.parse(res);
           		if(data.status){
-	          		layer.alert("修改成功", {icon: 6},function () {
-	              	// 获得frame索引
-	              	var index = parent.layer.getFrameIndex(window.name);
-	              	//关闭当前frame
-	              	parent.layer.close(index);
-	              	x_admin_father_reload();//刷新父窗口
-	          		});
+          			if(decodeURI(getQueryVariable("ruter"))=="student_by"){
+			      			$.ajax({
+			          		type:"post",
+					          	url:host+"out_login.php",
+					          	async:true,
+					          	success:function(res){
+					      				layer.alert("修改成功，请重新登陆", {icon: 6},function () {
+					              	x_admin_father_reload();//刷新父窗口
+						          	});
+						          }
+			          	});
+          			}else{
+          				layer.alert("修改成功", {icon: 6},function () {
+		              	// 获得frame索引
+		              	var index = parent.layer.getFrameIndex(window.name);
+		              	//关闭当前frame
+		              	parent.layer.close(index);
+		              	x_admin_father_reload();//刷新父窗口
+		          		});
+          			}
+	          		
           		}
           	}
           });

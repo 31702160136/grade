@@ -3,7 +3,9 @@ include_once "./../handler/handler.php";
 include_once "./../service/select.php";
 include_once "./../utils/session_status.php";
 include_once "./../utils/tools.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("sel_stu_score");
 	$selectService = new SelectService();
 	$data_score=array(
 		"student_group_id"=>@$_GET["student_group_id"]

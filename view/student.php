@@ -50,6 +50,7 @@
             <th>
               <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
             </th>
+            <th>序号</th>
             <th>学号</th>
             <th>姓名</th>
             <th>系部</th>
@@ -63,24 +64,49 @@
       </table>
       <div class="page">
         <div>
-        	<a style="border: none;">共有<span id="pages" style="border: none;">1</span>页</a>
         	<a style="border: none;">当前<span id="at" style="border: none;">1</span>页</a>
           	<a class="prev"  onclick="back()" style="cursor:pointer">上一页</a>
           	<a class="next"  onclick="next()" style="cursor:pointer">下一页</a>
+        	<a style="border: none;">共有<span id="pages" style="border: none;">1</span>页</a>
 	      	<a style="border: none;">
 	      		<select id="go" style="height: 30px;">
 	      		</select>
+	      	</a>
+	      	<a style="border: none;">
+	      		<input id="edit_page" style="width: 50px;" type="number" maxlength="3" class="layui-input x-sort" onchange="member_sort()"  value='10'>
 	      	</a>
         </div>
       </div>
     </div>
 <script>
+//序号
+var numberArr=[1];
+var numbers=1;
+init();
+function init(){
+	is_login("admin");
+	$.ajax({
+		type:"get",
+		url:host+"user_type.php",
+		async:true,
+		success:function(res){
+			var data=JSON.parse(res);
+			console.log(data);
+			if(data.status&&data.data.role=="admin"){
+				//初始化数据
+				queryTask(pg_ini);
+			}else{
+				out_login();
+				is_login("admin");
+			}
+		}
+	});
+}
 var pg_ini={
 	page:1,
-	size:10
+	size:parseInt($("#edit_page").val())
 }
-//初始化数据
-queryTask(pg_ini);
+
 //绑定多选框事件
 reCheckbox();
 function queryTask(data){
@@ -96,7 +122,6 @@ function queryTask(data){
 		data:data,
 		success:function(res){
 			var data=JSON.parse(res);
-			is_login(data.data.role);
 			console.log(data);
 			if(data.status){
 				$("#pages").text(data.data.pages);
@@ -111,21 +136,28 @@ function queryTask(data){
 						$("#go").append('<option value="'+(i+1)+'">'+(i+1)+'</option>');
 					}
 				}
+				numberArr=[1];
+				for(var i=0;i<parseInt(data.data.pages);i++){
+					numberArr.push(i*pg_ini.size+1);
+					console.log(i*pg_ini.size);
+				}
+				numbers=numberArr[at];
 				//信息列表
 				$.each(data.data.data, function(index,item) {
-					var list=getList(item);
+					var list=getList(item,numbers++);
 					$("#table").append(list);
 				});
 			}
 		}
 	});
 }
-function getList(item){
+function getList(item,index){
 	var doEditItem=JSON.stringify(item);
     	var list='<tr>'+
 		        	'<td>'+
 		          		'<div id="icheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='+item.id+'><i class="layui-icon">&#xe605;</i></div>'+
 		        	'</td>'+
+		        	'<td>'+index+'</td>'+
 		        	'<td>'+item.username+'</td>'+
 		        	'<td>'+item.name+'</td>'+
 		        	'<td>'+item.department+'</td>'+
@@ -150,6 +182,8 @@ function back(){
 		}
 		queryTask(data);
 		$("#at").text(page);
+		var page=parseInt($("#at").prop("innerText"));
+		numbers=numberArr[page-1];
 	}
 }
 //编辑窗口
@@ -177,10 +211,15 @@ window.onload = function () {
 				size:pg_ini.size,
 				curriculum:$("#sreach").val()
 			}
+    	var pages=parseInt($("#pages").prop("innerText"));
+			var page=parseInt($("#at").prop("innerText"));
+//			numbers=pg_ini.size*(page-1)+1;
 			queryTask(data);
+			//numbers=numberArr[page-1];
     },false);
 }
 function sreach(){
+	numbers=1;
 	var data={
 		page:1,
 		size:pg_ini.size
@@ -201,6 +240,13 @@ function reList(){
 		var form = layui.form;
 		form.render();
 	});
+}
+function member_sort(){
+	numbers=1;
+	numberArr=[1];
+	pg_ini.size=parseInt($("#edit_page").val());
+	//初始化数据
+	queryTask(pg_ini);
 }
 function delAll(argument) {
 	var ids = tableCheck.getData();

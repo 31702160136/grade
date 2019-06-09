@@ -2,7 +2,9 @@
 include_once "./../handler/handler.php";
 include_once "./../service/create.php";
 include_once "./../utils/session_status.php";
+include_once "./../boss/boss.php";
 if (sessionIsLogin()) {
+	boss("cre_member");
 	$createService = new CreateService();
 	if(is_array(@$_POST["student_id"])){
 		//无返回值

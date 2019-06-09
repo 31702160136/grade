@@ -30,7 +30,7 @@
                   <span class="x-red">*</span>分数
               </label>
               <div class="layui-input-inline">
-                  <input type="number" id="score" id="score"
+                  <input type="number" maxlength="4" id="score" id="score"
                   autocomplete="off" class="layui-input">
               </div>
           </div>
@@ -72,8 +72,10 @@ function sendScore(){
 			urls="cre_group_score.php";
 			break;
 	}
-	if(parseInt($("#score").val())>100||parseInt($("#score").val())<0){
-		layer.msg("成绩不能大于100与小于0", {icon: 5});
+	
+	var score=parseFloat($("#score").val());
+	if(score>100||score<0){
+		layer.msg("成绩不能大于100或小于0", {icon: 5});
 	}else{
 		$.ajax({
 			type:"post",

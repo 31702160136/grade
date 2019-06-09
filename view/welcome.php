@@ -8,6 +8,8 @@
         <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
         <meta http-equiv="Cache-Control" content="no-siteapp" />
         <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    	<script type="text/javascript" src="./js/xadmin.js"></script>
 		<script src="js/host.js"></script>
 		<script src="js/is_login.js"></script>
         <link rel="stylesheet" href="./css/font.css">
@@ -56,9 +58,13 @@
 				success:function(res){
 					console.log(res);
 					var data=JSON.parse(res);
-					$("#info_username").text("账号："+data.data.username);
-					$("#info_name").text("管理员："+data.data.name);
-					$("#info_role").text("角色："+data.data.role);
+					if(data.status&&data.data.role=="admin"){
+						$("#info_username").text("账号："+data.data.username);
+						$("#info_name").text("管理员："+data.data.name);
+						$("#info_role").text("角色："+data.data.role);
+					}else{
+						
+					}
 				}
 			});
 		}

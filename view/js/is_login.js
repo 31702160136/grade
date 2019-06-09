@@ -6,13 +6,14 @@ function is_login(str){
 		success: function(data){
 			var res=JSON.parse(data);
 			if (!res.status) {
-				alert(res.message);
+//				alert(res.message);
 				if(str=="student"){
-					window.location.href = "login_student.php";
+					console.log(1);
+					window.location.href = "login.php";
 				}else if(str=="teacher"){
 					window.location.href = "login_teacher.php";
 				}else if(str=="admin"){
-					window.location.href = "login.php";
+					window.location.href = "login_admin.php";
 				}
 				return;
 			}
@@ -22,3 +23,16 @@ function is_login(str){
 	    }
 	});
 }
+function out_login(){
+		$.ajax({
+			type:"get",
+			url: host + "out_login.php",
+			async:true,
+			success: function(data){
+				
+			},
+		    error : function () {
+		      	document.write("error");
+		    }
+		});
+	}

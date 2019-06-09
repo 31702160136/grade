@@ -50,7 +50,7 @@
                   <span class="x-red">*</span>密码
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="L_pass" name="password" required="" lay-verify="password"
+                  <input type="password" id="L_pass" name="password" required="" lay-verify="password"
                   autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
@@ -62,7 +62,7 @@
                   <span class="x-red">*</span>确认密码
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="L_repass" name="repassword" required="" lay-verify="repassword"
+                  <input type="password" id="L_repass" name="repassword" required="" lay-verify="repassword"
                   autocomplete="off" class="layui-input">
               </div>
           </div>
