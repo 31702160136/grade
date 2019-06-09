@@ -104,7 +104,6 @@ function queryTask(data){
 		data:data,
 		success:function(res){
 			var data=JSON.parse(res);
-			console.log(data);
 			if(data.status){
 				$("#pages").text(data.data.pages);
 				$("#go").html("");
@@ -121,7 +120,6 @@ function queryTask(data){
 				numberArr=[1];
 				for(var i=0;i<parseInt(data.data.pages);i++){
 					numberArr.push(i*pg_ini.size+1);
-					console.log(i*pg_ini.size);
 				}
 				numbers=numberArr[at];
 				//信息列表

@@ -48,7 +48,6 @@
                 	async: true,
                 	data: data.field,
                 	success: function(res) {
-                		console.log(res);
                 		var data=JSON.parse(res);
                 		if(data.status){
                 			location.href='task.php';

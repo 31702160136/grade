@@ -76,7 +76,6 @@ function queryTask(data){
 		data:data,
 		success:function(res){
 			var data=JSON.parse(res);
-			console.log(data);
 			if(data.status){
 				$("#pages").text(data.data.pages);
 				$("#go").html("");
@@ -178,9 +177,7 @@ function add(argument) {
 	  		student_id:data
 	  	},
 	  	success:function(res){
-	  				console.log(res);
 	        	var data=JSON.parse(res);
-	        	console.log(data);
 	          if(data.status){
 	          	// 可以对父窗口进行刷新 
 	          	x_admin_father_reload();

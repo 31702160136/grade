@@ -112,7 +112,6 @@ function init(){
 		success:function(res){
 			var data=JSON.parse(res);
 			is_login(data.data.role);
-			console.log(data);
 			if(data.status){
 				switch(data.data.role){
 					case "admin":
@@ -139,9 +138,7 @@ function student(){
 			group_id:getQueryVariable("group_id")
 		},
 		success:function(res){
-			console.log(res);
 			var data=JSON.parse(res);
-			console.log(data);
 			//判断是否为组成员
 			if(data.data.is_menber){
 				$("#breakGroup").show();
@@ -170,9 +167,7 @@ function queryTask(data){
 		async:true,
 		data:data,
 		success:function(res){
-			console.log(res);
 			var data=JSON.parse(res);
-			console.log(data);
 			if(data.status){
 				$("#pages").text(data.data.pages);
 				$("#go").html("");
@@ -190,7 +185,6 @@ function queryTask(data){
 				numberArr=[1];
 				for(var i=0;i<parseInt(data.data.pages);i++){
 					numberArr.push(i*pg_ini.size+1);
-					console.log(i*pg_ini.size);
 				}
 				numbers=numberArr[at];
 				//信息列表
@@ -293,7 +287,6 @@ function sreach(){
 
 function add(){
 	var str="group_id="+encodeURI(getQueryVariable("group_id"))+"&task_id="+encodeURI(getQueryVariable("task_id"));
-	console.log(str);
 	x_admin_show("编辑","task_group_add_member.php?"+str,600,500);
 }
 function member_sort(){
@@ -304,24 +297,25 @@ function member_sort(){
 	queryTask(pg_ini);
 }
 function dissolve_group(){
-	$.ajax({
-		type:"post",
-		url:host+"del_group_dissolve.php",
-		data:{
-			group_id:getQueryVariable("group_id"),
-			task_id:getQueryVariable("task_id")
-		},
-		success:function(res){
-			console.log(res);
-			var data=JSON.parse(res);
-			if (data.status) {
-				layer.alert(data.message, {icon: 6},function () {
-					history.back(-1);
-				});
-			}else{
-				layer.msg(data.message, {icon: 2});
+	layer.alert("确定解散队伍？",function () {
+		$.ajax({
+			type:"post",
+			url:host+"del_group_dissolve.php",
+			data:{
+				group_id:getQueryVariable("group_id"),
+				task_id:getQueryVariable("task_id")
+			},
+			success:function(res){
+				var data=JSON.parse(res);
+				if (data.status) {
+					layer.alert("解散队伍成功", {icon: 6},function () {
+						history.back(-1);
+					});
+				}else{
+					layer.msg(data.message, {icon: 2});
+				}
 			}
-		}
+		});
 	});
 }
 function break_group(){
@@ -332,7 +326,6 @@ function break_group(){
 			group_id:getQueryVariable("group_id")
 		},
 		success:function(res){
-			console.log(res);
 			var data=JSON.parse(res);
 			if (data.status) {
 				layer.alert(data.message, {icon: 6},function () {
@@ -410,7 +403,6 @@ function delAll(argument) {
 		  		ids:data
 		  	},
 		  	success:function(res){
-		  		console.log(res);
 		        	var data=JSON.parse(res);
 		        	if(data.status){
 		        		layer.msg(data.message, {icon: 1});

@@ -134,7 +134,6 @@
 	           		async:true,
 	           		data:data.field,
 	           		success:function(res){
-	           			console.log(res);
 	           			var data=JSON.parse(res);
 	           			if(data.status){
 	           				layer.alert(data.message, {icon: 6},function () {

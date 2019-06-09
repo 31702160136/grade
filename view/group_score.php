@@ -40,9 +40,7 @@ function init(){
   		group_id:getQueryVariable("group_id")
   	},
   	success:function(res){
-  			console.log(res);
         	var data=JSON.parse(res);
-        	console.log(data);
         	if(data.status){
         		$(data.data).each(function(index,item){
 	        		var list=getList(item);

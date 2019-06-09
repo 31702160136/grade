@@ -56,7 +56,6 @@
 				url:host+"sel_user_info.php",
 				async:true,
 				success:function(res){
-					console.log(res);
 					var data=JSON.parse(res);
 					if(data.status&&data.data.role=="admin"){
 						$("#info_username").text("账号："+data.data.username);

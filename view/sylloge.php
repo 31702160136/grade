@@ -48,9 +48,7 @@ function init(){
   		task_id:getQueryVariable("task_id")
   	},
   	success:function(res){
-  			console.log(res);
         	var data=JSON.parse(res);
-        	console.log(data);
         	jsonData=data.data;
         	if(data.status){
         		$(data.data).each(function(index,item){

@@ -68,7 +68,6 @@ function sendScore(){
 				group_id:getQueryVariable("group_id"),
 				task_id:getQueryVariable("task_id"),
 			}
-			console.log(data);
 			urls="cre_group_score.php";
 			break;
 	}
@@ -83,9 +82,7 @@ function sendScore(){
 			async:true,
 			data:data,
 			success:function(res){
-				console.log(res);
 				var data=JSON.parse(res);
-				console.log(data);
 				if(data.status){
 					layer.alert(data.message, {icon: 6},function () {
 		    		//关闭当前frame

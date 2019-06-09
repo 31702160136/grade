@@ -95,9 +95,7 @@
 			url:host+"user_type.php",
 			async:true,
 			success:function(res){
-				console.log(res);
 				var data=JSON.parse(res);
-				console.log(data);
 				if(data.status&&data.data.role=="admin"){
 					
 				}else{

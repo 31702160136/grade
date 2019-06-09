@@ -45,7 +45,6 @@ function init(){
 		},
 		success:function(res){
 			var data=JSON.parse(res);
-			console.log(data);
 			//信息列表
 			$.each(data.data, function(index,item) {
 				var list=getList(item);

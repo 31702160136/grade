@@ -72,7 +72,6 @@ function init(){
 		success:function(res){
 			var data=JSON.parse(res);
 			is_login(data.data.role);
-			console.log(data);
 			if(data.status){
 				switch(data.data.role){
 					case "admin":
@@ -107,9 +106,7 @@ function queryTask(data){
 		async:true,
 		data:data,
 		success:function(res){
-			console.log(res);
 			var data=JSON.parse(res);
-			console.log(data);
 			if(data.status){
 				$("#pages").text(data.data.pages);
 				$("#go").html("");
@@ -186,7 +183,6 @@ function archive(item){
 				is_archive:0
 			},
 			success:function(res){
-				console.log(res);
 				var data=JSON.parse(res);
 				if(data.status){
 					layer.msg("取消存档成功", {icon: 1});
@@ -214,7 +210,6 @@ function del(item) {
 				ids:ids
 			},
 			success:function(res){
-				console.log(res);
 				var data=JSON.parse(res);
 				if(data.status){
 					layer.msg(data.message, {icon: 1});
@@ -240,7 +235,6 @@ function delAll(argument) {
 					ids:ids
 				},
 				success:function(res){
-					console.log(res);
 					var data=JSON.parse(res);
 					if(data.status){
 						layer.msg(data.message, {icon: 1});
