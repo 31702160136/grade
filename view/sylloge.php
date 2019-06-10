@@ -28,6 +28,7 @@
       <table class="layui-table x-admin"  id="table">
         <thead id="title">
           <tr>
+          	<th>学号</th>
             <th>姓名</th>
             <th>小组</th>
             <th>组员互评</th>
@@ -63,6 +64,7 @@ function getList(item){
 	var doEditItem=JSON.stringify(item);
 	var list='<tbody>'+
 	'<tr>'+
+			'<td>'+item.username+'</td>'+
     	'<td>'+item.name+'</td>'+
     	'<td>'+item.group_name+'</td>'+
     	'<td>'+item.student_score+'</td>'+
@@ -79,10 +81,11 @@ function tableToExcel(){
 		return;
 	}
       //列标题
-      var str = '<tr></tr>'+'<tr> <td style="border: solid #010100 1px;">姓名</td> <td style="border: solid #010100 1px;">小组评分</td> <td style="border: solid #010100 1px;">组员评分</td> <td style="border: solid #010100 1px;">教师评分</td> <td style="border: solid #010100 1px;">总成绩</td> </tr>';
+      var str ='<tr> <td style="border: solid #010100 1px;">学号</td> <td style="border: solid #010100 1px;">姓名</td> <td style="border: solid #010100 1px;">小组评分</td> <td style="border: solid #010100 1px;">组员评分</td> <td style="border: solid #010100 1px;">教师评分</td> <td style="border: solid #010100 1px;">总成绩</td> </tr>';
       //循环遍历，每行加入tr标签，每个单元格加td标签
       for(var i = 0 ; i < jsonData.length ; i++ ){
         str+='<tr>';
+        str+="<td style='border: solid #010100 1px;'> "+jsonData[i].username+"\t"+"</td>";
         str+="<td style='border: solid #010100 1px;'> "+jsonData[i].name+"\t"+"</td>";
         str+="<td style='border: solid #010100 1px;'> "+jsonData[i].student_score+"\t"+"</td>";
         str+="<td style='border: solid #010100 1px;'> "+jsonData[i].group_score+"\t"+"</td>";

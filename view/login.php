@@ -19,7 +19,8 @@
 <body class="login-bg">
     
     <div class="login layui-anim layui-anim-up">
-        <div class="message">学生登陆</div>
+        <div class="message">学生登陆
+        </div>
         <div id="darkbannerwrap"></div>
         
         <form method="post" class="layui-form" >
@@ -30,7 +31,10 @@
             <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
             <hr class="hr20" >
         </form>
-        <div><a href="javascript:x_admin_show('注册账号','student_add.php',600,500);">注册账号</a></div>
+        <div>
+        	<a href="javascript:x_admin_show('注册账号','student_add.php',600,500);">注册账号</a>
+        	<a href="login_teacher.php" class="x-right">教师登陆</a>
+        </div>
     </div>
 
 <script>

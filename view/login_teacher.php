@@ -30,6 +30,9 @@
             <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
             <hr class="hr20" >
         </form>
+        <div>
+        	<a href="login.php" class="x-right">学生登陆</a>
+        </div>
     </div>
 
     <script>

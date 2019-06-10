@@ -25,12 +25,13 @@
     <div class="x-body">
       <div class="layui-row">
         <div class="layui-form layui-col-md12 x-so">
-        	<input type="text" id="sreach" placeholder="请输入查询信息" autocomplete="off" class="layui-input">
+        	<input type="text" id="sreach" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
           	<button class="layui-btn" onclick="sreach()"><i class="layui-icon">&#xe615;</i></button>
         </div>
       </div>
       <xblock>
         <button id="del" class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
+        <button id="del" class="layui-btn" onclick="unArchive()">批量取消存档</button>
       </xblock>
       <table class="layui-table x-admin" >
         <thead id="title">
@@ -230,6 +231,32 @@ function delAll(argument) {
 			$.ajax({
 				type:"post",
 				url:host+"del_task.php",
+				async:true,
+				data:{
+					ids:ids
+				},
+				success:function(res){
+					var data=JSON.parse(res);
+					if(data.status){
+						layer.msg(data.message, {icon: 1});
+						x_admin_father_reload();
+					}else{
+						layer.msg(data.message, {icon: 2});
+					}
+				}
+			});
+	  });
+	}
+}
+function unArchive(argument){
+	var ids = tableCheck.getData();
+	if(!(ids.length>0)){
+		layer.msg("请勾选任务", {icon: 2});
+	}else{
+		layer.confirm('确认要取消存档吗？', function(index) {
+			$.ajax({
+				type:"post",
+				url:host+"task_archives.php",
 				async:true,
 				data:{
 					ids:ids

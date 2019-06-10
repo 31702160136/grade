@@ -39,7 +39,7 @@
       <xblock>
         <button id="del" class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
         <button id="cre" class="layui-btn" onclick="x_admin_show('创建任务','./task_add.php',600,550)"><i class="layui-icon"></i>创建</button>
-        <button id="archive" class="layui-btn" onclick="x_admin_show('存档','./archive_task.php',850,700)">存档</button>
+        <button id="archive" class="layui-btn" onclick="x_admin_show('存档','./archive_task.php',850,700)">查看存档</button>
       </xblock>
       <table class="layui-table x-admin" >
         <thead id="title">

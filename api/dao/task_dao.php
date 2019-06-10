@@ -73,6 +73,7 @@ class TaskDao {
 		$sql = "select 
 					sg.group_id as id,
 					s.id as student_id,
+					s.username as username,
 					avg(g.teacher_by_score) as teacher_score,
 					s.`name`,
 					g.`name` as group_name 
@@ -83,7 +84,8 @@ class TaskDao {
 					where sg.student_id=s.id 
 					and sg.group_id=g.id 
 					and $task_id 
-					GROUP BY sg.id";
+					GROUP BY sg.id 
+					ORDER BY s.username ";
 		$result = $this -> sql -> query($sql);
 		return $result;
 		
