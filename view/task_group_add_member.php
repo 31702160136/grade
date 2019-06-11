@@ -69,9 +69,10 @@ function queryTask(data){
 	}else if($("#condition").val()=="name"){
 		data["name"]=$("#sreach").val();
 	}
+	data["task_id"]=encodeURI(getQueryVariable("task_id"));
 	$.ajax({
 		type:"get",
-		url:host+"sel_students.php",
+		url:host+"sel_student_not_group.php",
 		async:true,
 		data:data,
 		success:function(res){

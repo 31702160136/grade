@@ -28,6 +28,7 @@
         <a>
           <cite id="g_title">成员列表</cite></a>
       </span>
+      <span class="x-right" style="line-height:40px;margin-top: 5px;"><button class="layui-btn" onclick="outLogin()">退出登陆</button></span>
     </div>
     <div class="x-body">
       <div class="layui-row">
@@ -99,6 +100,7 @@ init();
 queryTask(pg_ini);
 //绑定多选框事件
 reCheckbox();
+var status="学生";
 $("#dissolveGroup").hide();
 $("#del").hide();
 $("#add").hide();
@@ -119,9 +121,11 @@ function init(){
 						break;
 					case "teacher":
 						student();
+						status="教师";
 						break;
 					case "student":
 						student();
+						status="学生";
 						break;
 				}
 			}
@@ -345,7 +349,14 @@ function select(item){
 	var str="student_group_id="+item.id;
 	x_admin_show("互评","student_score.php?"+str,600,500);
 }
-
+function outLogin(){
+	out_login();
+	if(status=="学生"){
+		window.location.href="login.php";
+	}else if(status=="教师"){
+		window.location.href="login_teacher.php";
+	}
+}
 //	$(document).on('click','#a1',function(){
 //             x_admin_show("编辑","member-edit.html",600,400);
 //  })

@@ -70,13 +70,34 @@ class SelectService {
 			$data2=array(
 				"id"=>$result[$i]["id"]
 			);
-			$res_count=$this->task->findTaskMemberCount($data2);
+			$res_count=$this->task->findTaskMember($data2);
 			if(count($res_count)>0){
-				$result[$i]["count"]=$res_count[0]["count"];
+				$result[$i]["count"]=count($res_count);
 			}else{
 				$result[$i]["count"]=0;
 			}
 		}
+		return $result;
+	}
+	//查询未加入指定任务的学生
+	function getStudentNotMember($data){
+		if(@$data["page"]>0){
+			$data["page"]--;
+			$data["page"]*=$data["size"];
+		}
+		$data["id"]=$data["task_id"];
+		unset($data["task_id"]);
+		$result_mem=$this->task->findTaskMember($data);
+		unset($data["id"]);
+		if(count($result_mem)){
+			$arr=array();
+			for($i=0;$i<count($result_mem);$i++){
+				array_push($arr,$result_mem[$i]["student_id"]);
+			}
+			$data["not_id"]=$arr;
+			$result=$this->student->findStudents($data);
+		}
+		$result=$this->student->findStudents($data);
 		return $result;
 	}
 	//查询小组

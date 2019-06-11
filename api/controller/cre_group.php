@@ -7,7 +7,7 @@ if(sessionIsLogin()){
 	boss("cre_group");
 	$createService = new CreateService();
 	$data = array(
-		"name" => @$_POST["name"],
+		"name" => trim(@$_POST["name"]),
 		"task_id"=>@$_POST["task_id"],
 		"student_id"=>getSessionId()
 	);

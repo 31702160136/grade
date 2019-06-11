@@ -49,9 +49,9 @@ class TaskDao {
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}
-	public function findTaskMemberCount($data) {
-		$task_id="t.`id` = '".trim($data["id"])."' ";
-		$sql = "select count(sg.id) as count
+	public function findTaskMember($data) {
+		$task_id="t.`id` = '".trim(@$data["id"])."' ";
+		$sql = "select sg.student_id as student_id 
 				from `student_group` sg,
 				`group` g,
 				`task` t 

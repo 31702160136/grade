@@ -24,6 +24,7 @@
     <div class="x-nav">
       <span class="layui-breadcrumb">
         <a href="javascript:history.go(-1)">任务列表</a>
+        <span class="x-right" style="line-height:40px;margin-top: 5px;"><button class="layui-btn" onclick="outLogin()">退出登陆</button></span>
         <a>
           <cite>小组列表</cite></a>
       </span>
@@ -54,6 +55,7 @@
             <th>序号</th>
             <th>组名</th>
             <th>队长</th>
+            <th>人数</th>
             <th>分数</th>
             <th>小组互评</th>
             <th>组成员</th>
@@ -136,6 +138,7 @@ function queryTask(data){
 		async:true,
 		data:data,
 		success:function(res){
+			console.log(res);
 			var data=JSON.parse(res);
 			if(data.status){
 				$("#pages").text(data.data.pages);
@@ -193,6 +196,7 @@ function getList(item,index){
             	'<td>'+index+'</td>'+
             	'<td>'+item.name+'</td>'+
             	'<td>'+item.student+
+            	'<td>'+item.count+
             	'</td>'+
             	score+
             	'<td class="td-manage">'+
@@ -311,7 +315,14 @@ function member_del(obj, id) {
 		});
 	});
 }
-
+function outLogin(){
+	out_login();
+	if(status=="学生"){
+		window.location.href="login.php";
+	}else if(status=="教师"){
+		window.location.href="login_teacher.php";
+	}
+}
 function delAll(argument) {
 
 	var data = tableCheck.getData();

@@ -53,7 +53,7 @@
             <th>学期</th>
             <th>任务发布日期</th>
             <th>任课老师</th>
-            <th>加入人数</th>
+            <th>人数</th>
             <th>查看任务</th>
             <th id="sylloge">汇总</th>
              <th id="operate">操作</th>
