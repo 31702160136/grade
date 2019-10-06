@@ -36,7 +36,7 @@ class TaskDao {
 		}
 		//处理页数
 		if(isset($data["page"])&&isset($data["size"])){
-			$lim="limit ".$data["page"].",".$data["size"];
+			$lim="limit ".trim($data["page"]).",".trim($data["size"]);
 		}
 		$sql = "select t1.*,t2.`name` as name from `task` t1,`teacher` t2 where 
 						t1.`teacher_id`=t2.`id` 

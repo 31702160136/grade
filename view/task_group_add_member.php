@@ -54,28 +54,32 @@
       </table>
     </div>
 <script>
+var task_id=decodeURI(getQueryVariable("task_id"));
+var group_id=decodeURI(getQueryVariable("group_id"));
 var pg_ini={
 	page:1,
 	size:999,
-	task_id:getQueryVariable("task_id")
+	only_show_no_task_student:true,
+	task_id:task_id
 }
 //初始化数据
 queryTask(pg_ini);
 //绑定多选框事件
 reCheckbox();
 function queryTask(data){
+	console.log(data);
 	if($("#condition").val()=="username"){
 		data["username_s"]=$("#sreach").val();
 	}else if($("#condition").val()=="name"){
 		data["name"]=$("#sreach").val();
 	}
-	data["task_id"]=encodeURI(getQueryVariable("task_id"));
 	$.ajax({
 		type:"get",
-		url:host+"sel_student_not_group.php",
+		url:host+"sel_students.php",
 		async:true,
 		data:data,
 		success:function(res){
+			console.log(res);
 			var data=JSON.parse(res);
 			if(data.status){
 				$("#pages").text(data.data.pages);
@@ -117,7 +121,7 @@ function sreach(){
 	var data={
 		page:1,
 		size:pg_ini.size,
-		task_id:getQueryVariable("task_id"),
+		task_id:task_id,
 	}
 	queryTask(data);
 }
@@ -173,8 +177,8 @@ function add(argument) {
 		type:"post",
 		url:host+"cre_member.php",
 	  	data:{
-	  		task_id:encodeURI(getQueryVariable("task_id")),
-	  		group_id:encodeURI(getQueryVariable("group_id")),
+	  		task_id:task_id,
+	  		group_id:group_id,
 	  		student_id:data
 	  	},
 	  	success:function(res){

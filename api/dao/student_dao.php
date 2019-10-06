@@ -12,34 +12,36 @@ class StudentDao {
 		$name="`id`";
 		$username="`id`";
 		$username_s="`id`";
-		$notId="";
+		$only_show_no_task_student="`id`";
 		if(isset($data["page"])&&isset($data["size"])){
-			$lim=" limit ".$data["page"].",".$data["size"];
+			$lim=" limit ".trim($data["page"]).",".trim($data["size"]);
 		}
 		if(isset($data["name"])){
-			$name="`name` like '%".$data["name"]."%' ";
+			$name="`name` like '%".trim($data["name"])."%' ";
 		}
 		if(isset($data["username_s"])){
-			$username_s="`username` like '%".$data["username_s"]."%' ";
+			$username_s="`username` like '%".trim($data["username_s"])."%' ";
 		}
 		if(isset($data["username"])){
-			$username="`username`='".$data["username"]."' ";
+			$username="`username`='".trim($data["username"])."' ";
 		}
 		if(isset($data["id"])){
-			$id="`id`='".$data["id"]."' ";
+			$id="`id`='".trim($data["id"])."' ";
 		}
-		if(isset($data["not_id"])&&is_array($data["not_id"])){
-			$notId="";
-			for($i=0;$i<count($data["not_id"]);$i++){
-				$notId.="and `id`!='".$data["not_id"][$i]."' ";
-			}
+		$task_id = null;
+		if(isset($data["task_id"])){
+			$task_id=trim($data["task_id"]);
 		}
+		if(isset($data["only_show_no_task_student"])){
+			$only_show_no_task_student="`class` = (select `class` from `group` as g,`student` as s where g.`task_id`= $task_id and g.`student_id`=s.`id` LIMIT 1 ) and NOT EXISTS (select 1 from `student_group` where EXISTS (SELECT `id` from `group` where `task_id`= $task_id and `student_group`.`group_id`=`group`.`id`) and `student`.`id` = `student_group`.`student_id`)";
+		}
+		
 		$sql="select * from `student` 
 				where $name 
 				and $id 
 				and $username 
 				and $username_s 
-				$notId 
+				and $only_show_no_task_student 
 				ORDER BY username 
 				$lim ";
 		$result = $this -> sql -> query($sql);

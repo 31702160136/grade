@@ -13,6 +13,7 @@
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
     <script type="text/javascript" src="./js/tools.js"></script>
+    <script type="text/javascript" src="./js/myBase64.js"></script>
     <script type="text/javascript" src="./js/is_login.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
@@ -27,8 +28,8 @@
         <a href="javascript:history.go(-1)">小组列表</a>
         <a>
           <cite id="g_title">成员列表</cite></a>
+				<span class="x-right" style="line-height:40px;margin-top: 5px;"><button class="layui-btn" onclick="outLogin()">退出登陆</button></span>
       </span>
-      <span class="x-right" style="line-height:40px;margin-top: 5px;"><button class="layui-btn" onclick="outLogin()">退出登陆</button></span>
     </div>
     <div class="x-body">
       <div class="layui-row">
@@ -87,20 +88,25 @@
 //序号
 var numberArr=[1];
 var numbers=1;
-
+var b=new Base64();
+console.log();
+var decoData=b.decode(getQueryVariable("data"));
+var task_id=getQueryVariableInData(decoData,"task_id");
+var group_id=getQueryVariableInData(decoData,"group_id");
+var name=getQueryVariableInData(decoData,"name");
 var pg_ini={
 	page:1,
 	size:10,
-	task_id:getQueryVariable("task_id"),
-	group_id:getQueryVariable("group_id")
+	task_id:task_id,
+	group_id:group_id
 }
 //用户类型初始化
 init();
+var status="学生";
 //初始化数据
 queryTask(pg_ini);
 //绑定多选框事件
 reCheckbox();
-var status="学生";
 $("#dissolveGroup").hide();
 $("#del").hide();
 $("#add").hide();
@@ -139,7 +145,7 @@ function student(){
 		url:host+"student_location.php",
 		async:true,
 		data:{
-			group_id:getQueryVariable("group_id")
+			group_id:group_id
 		},
 		success:function(res){
 			var data=JSON.parse(res);
@@ -233,8 +239,8 @@ function back(){
 		var data={
 			page:page,
 			size:pg_ini.size,
-			task_id:getQueryVariable("task_id"),
-			group_id:getQueryVariable("group_id")
+			task_id:task_id,
+			group_id:group_id
 		}
 		if($("#condition").val()=="username"){
 			data["username_s"]=$("#sreach").val();
@@ -256,8 +262,8 @@ function next(item){
 		var data={
 			page:page,
 			size:pg_ini.size,
-			task_id:getQueryVariable("task_id"),
-			group_id:getQueryVariable("group_id")
+			task_id:task_id,
+			group_id:group_id
 		}
 		queryTask(data);
 		$("#at").text(page);
@@ -271,26 +277,34 @@ window.onload = function () {
     	var data={
 				page:page,
 				size:pg_ini.size,
-				task_id:getQueryVariable("task_id"),
-			group_id:getQueryVariable("group_id")
+				task_id:task_id,
+				group_id:group_id
 			}
 			queryTask(data);
     },false);
+}
+function outLogin(){
+	out_login();
+	if(status=="学生"){
+		window.location.href="login.php";
+	}else if(status=="教师"){
+		window.location.href="login_teacher.php";
+	}
 }
 function sreach(){
 	numbers=1;
 	var data={
 		page:1,
 		size:pg_ini.size,
-		task_id:getQueryVariable("task_id"),
-		group_id:getQueryVariable("group_id")
+		task_id:task_id,
+		group_id:group_id
 	}
 	queryTask(data);
 	$("#at").text(1);
 }
 
 function add(){
-	var str="group_id="+encodeURI(getQueryVariable("group_id"))+"&task_id="+encodeURI(getQueryVariable("task_id"));
+	var str="group_id="+encodeURI(group_id)+"&task_id="+encodeURI(task_id);
 	x_admin_show("编辑","task_group_add_member.php?"+str,600,500);
 }
 function member_sort(){
@@ -306,8 +320,8 @@ function dissolve_group(){
 			type:"post",
 			url:host+"del_group_dissolve.php",
 			data:{
-				group_id:getQueryVariable("group_id"),
-				task_id:getQueryVariable("task_id")
+				group_id:group_id,
+				task_id:task_id
 			},
 			success:function(res){
 				var data=JSON.parse(res);
@@ -327,7 +341,7 @@ function break_group(){
 		type:"post",
 		url:host+"del_break_group.php",
 		data:{
-			group_id:getQueryVariable("group_id")
+			group_id:group_id
 		},
 		success:function(res){
 			var data=JSON.parse(res);
@@ -349,55 +363,11 @@ function select(item){
 	var str="student_group_id="+item.id;
 	x_admin_show("互评","student_score.php?"+str,600,500);
 }
-function outLogin(){
-	out_login();
-	if(status=="学生"){
-		window.location.href="login.php";
-	}else if(status=="教师"){
-		window.location.href="login_teacher.php";
-	}
-}
+
 //	$(document).on('click','#a1',function(){
 //             x_admin_show("编辑","member-edit.html",600,400);
 //  })
-/*用户-停用*/
-function member_stop(obj, id) {
-	layer.confirm('确认要停用吗？', function(index) {
 
-		if($(obj).attr('title') == '启用') {
-			//发异步把用户状态进行更改
-			$(obj).attr('title', '停用')
-			$(obj).find('i').html('&#xe62f;');
-			$(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
-			layer.msg('已停用!', {
-				icon: 5,
-				time: 1000
-			});
-		} else {
-			$(obj).attr('title', '启用')
-			$(obj).find('i').html('&#xe601;');
-
-			$(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
-			layer.msg('已启用!', {
-				icon: 5,
-				time: 1000
-			});
-		}
-
-	});
-}
-
-/*用户-删除*/
-function member_del(obj, id) {
-	layer.confirm('确认要删除吗？', function(index) {
-		//发异步删除数据
-		$(obj).parents("tr").remove();
-		layer.msg('已删除!', {
-			icon: 1,
-			time: 1000
-		});
-	});
-}
 
 function delAll(argument) {
 
@@ -410,7 +380,7 @@ function delAll(argument) {
 				type:"post",
 				url:host+"del_member.php",
 		  	data:{
-		  		group_id:getQueryVariable("group_id"),
+		  		group_id:group_id,
 		  		ids:data
 		  	},
 		  	success:function(res){

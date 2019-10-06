@@ -16,28 +16,28 @@ class StudentGroupDao {
 		$group_id="sg.`id`";
 		$task_id="sg.`id`";
 		if(isset($data["page"])&&isset($data["size"])){
-			$lim=" limit ".$data["page"].",".$data["size"];
+			$lim=" limit ".trim($data["page"]).",".trim($data["size"]);
 		}
 		if(isset($data["id"])){
-			$id="sg.`id` = '".$data["id"]."' ";
+			$id="sg.`id` = '".trim($data["id"])."' ";
 		}
 		if(isset($data["name_s"])){
-			$name_s="s.`name` like '%".$data["name_s"]."%' ";
+			$name_s="s.`name` like '%".trim($data["name_s"])."%' ";
 		}
 		if(isset($data["username_s"])){
-			$username_s="s.`username` like '%".$data["username_s"]."%' ";
+			$username_s="s.`username` like '%".trim($data["username_s"])."%' ";
 		}
 		if(isset($data["username"])){
-			$username="s.`username`='".$data["username"]."' ";
+			$username="s.`username`='".trim($data["username"])."' ";
 		}
 		if(isset($data["student_id"])){
-			$student_id="sg.`student_id`='".$data["student_id"]."' ";
+			$student_id="sg.`student_id`='".trim($data["student_id"])."' ";
 		}
 		if(isset($data["group_id"])&&!empty($data["group_id"])){
-			$group_id="sg.`group_id`='".$data["group_id"]."' ";
+			$group_id="sg.`group_id`='".trim($data["group_id"])."' ";
 		}
 		if(isset($data["task_id"])&&!empty($data["task_id"])){
-			$task_id="g.task_id='".$data["task_id"]."' ";
+			$task_id="g.task_id='".trim($data["task_id"])."' ";
 		}
 		$sql = "select sg.*,s.`name`,s.username 
 					from student_group sg,student s,`group` g,`task` t 

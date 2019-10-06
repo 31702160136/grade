@@ -11,13 +11,13 @@ class StudentScoreDao {
 		$from_student_id="ss.`id`";
 		$student_group_id="ss.`id`";
 		if(isset($data["page"])&&isset($data["size"])){
-			$lim=" limit ".$data["page"].",".$data["size"];
+			$lim=" limit ".trim($data["page"]).",".trim($data["size"]);
 		}
 		if(isset($data["from_student_id"])){
-			$from_student_id="`from_student_id` = '".$data["from_student_id"]."' ";
+			$from_student_id="`from_student_id` = '".trim($data["from_student_id"])."' ";
 		}
 		if(isset($data["student_group_id"])){
-			$student_group_id="`student_group_id` = '".$data["student_group_id"]."' ";
+			$student_group_id="`student_group_id` = '".trim($data["student_group_id"])."' ";
 		}
 		$sql="select ss.*,s.`name` as from_student 
 				from student_score ss,student s 

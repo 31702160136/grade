@@ -7,7 +7,7 @@ class AdminDao {
 	}
 
 	public function findAdminByUserName($username) {
-		$sql = "select * from `admin` where `username`='".$username."'";
+		$sql = "select * from `admin` where `username`='".trim($username)."'";
 		$result = $this -> sql -> query($sql);
 		return $result;
 	}

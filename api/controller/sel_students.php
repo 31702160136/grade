@@ -10,6 +10,8 @@ if (sessionIsLogin()) {
 	$data=array(
 		"name"=>isset($_GET["name"])?$_GET["name"]:null,
 		"username_s"=>isset($_GET["username_s"])?$_GET["username_s"]:null,
+		"task_id"=>isset($_GET["task_id"])?$_GET["task_id"]:null,
+		"only_show_no_task_student"=>isset($_GET["only_show_no_task_student"])?$_GET["only_show_no_task_student"]:null,
 		"page"=>isset($_GET["page"])?$_GET["page"]:0,
 		"size"=>isset($_GET["size"])?$_GET["size"]:10
 	);

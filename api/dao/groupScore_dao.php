@@ -11,13 +11,13 @@ class GroupScoreDao {
 		$group_id="gs.`id`";
 		$from_group_id="gs.`id`";
 		if(isset($data["size"])&& !empty(trim($data["size"]))){
-			$lim=" limit ".$data["page"].",".$data["size"];
+			$lim=" limit ".trim($data["page"]).",".trim($data["size"]);
 		}
 		if(isset($data["group_id"])&& !empty(trim($data["group_id"]))){
-			$group_id="gs.group_id='".$data["group_id"]."' ";
+			$group_id="gs.group_id='".trim($data["group_id"])."' ";
 		}
 		if(isset($data["from_group_id"])&& !empty(trim($data["from_group_id"]))){
-			$from_group_id="gs.from_group_id='".$data["from_group_id"]."' ";
+			$from_group_id="gs.from_group_id='".trim($data["from_group_id"])."' ";
 		}
 		$sql = "select gs.*,g.name as `name` from group_score gs,`group` g 
 					where gs.from_group_id=g.id 

@@ -11,16 +11,16 @@ class TeacherDao {
 		$username="`id`";
 		$username_s="`id`";
 		if(isset($data["page"])&&isset($data["size"])){
-			$lim=" limit ".$data["page"].",".$data["size"];
+			$lim=" limit ".trim($data["page"]).",".trim($data["size"]);
 		}
 		if(isset($data["name"])){
-			$name="`name` like '%".$data["name"]."%' ";
+			$name="`name` like '%".trim($data["name"])."%' ";
 		}
 		if(isset($data["username"])){
-			$username="`username`='".$data["username"]."' ";
+			$username="`username`='".trim($data["username"])."' ";
 		}
 		if(isset($data["username_s"])){
-			$username_s="`username` like '%".$data["username_s"]."%' ";
+			$username_s="`username` like '%".trim($data["username_s"])."%' ";
 		}
 		$sql = "select * from `teacher` where $name and $username and $username_s $lim";
 		$result = $this -> sql -> query($sql);

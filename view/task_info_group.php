@@ -13,6 +13,7 @@
     <script type="text/javascript" src="./js/cookie.js"></script>
     <script type="text/javascript" src="./js/host.js"></script>
     <script type="text/javascript" src="./js/tools.js"></script>
+    <script type="text/javascript" src="./js/myBase64.js"></script>
     <script type="text/javascript" src="./js/is_login.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
@@ -203,9 +204,7 @@ function getList(item,index){
               	'<button class="layui-btn" onclick="select('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看互评</button>'+
             	'</td>'+
             	'<td class="td-manage">'+
-              	'<a href="task_info_group_student.php?group_id='+item.id+"&name="+item.name+"&task_id="+encodeURI(getQueryVariable("task_id"))+'">'+
-              		'<button class="layui-btn"><i class="layui-icon"></i>查看成员</button>'+
-            	'</a>'+
+              	'<button class="layui-btn" onclick="openGroup('+doEditItem.replace(/\"/g,"'")+')"><i class="layui-icon"></i>查看成员</button>'+
             	'</td>'+
       		'</tr>';
   	return list;
@@ -274,7 +273,16 @@ function openMyGroup(){
 		layer.msg("未加入任何小组", {icon: 5});
 		return;
 	}
-	window.location.href="task_info_group_student.php?group_id="+myGroup+"&name="+name+"&task_id="+encodeURI(getQueryVariable("task_id"));
+	var b=new Base64();
+	var data=b.encode("group_id="+myGroup+"&name="+name+"&task_id="+getQueryVariable("task_id"));
+	var uri="task_info_group_student.php?data="+data;
+	window.location.href=uri;
+}
+function openGroup(item){
+	var b=new Base64();
+	var data=b.encode("group_id="+item.id+"&name="+item.name+"&task_id="+getQueryVariable("task_id"));
+	var uri="task_info_group_student.php?data="+data;
+	window.location.href=uri;
 }
 //编辑窗口
 function add(){
